@@ -50,6 +50,10 @@ public class Arm extends SubsystemBase {
         positionMode = true;
     }
 
+    public void getArmPosition() {
+        return armMotor.getEncoder().getPosition();
+    }
+
     public void setArmSpeed(double speed) {
         this.speed = speed;
         positionMode = false;

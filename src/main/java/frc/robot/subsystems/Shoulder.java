@@ -37,16 +37,20 @@ public class Shoulder extends SubsystemBase {
         else shoulderMotor.set(speed);
     }
     
-    public void moveDirection(int direction) {
+    public void moveShoulderDirection(int direction) {
         shoulderMotor.set(direction * Constants.MechanismConstants.kShoulderSpeed);
     }
 
-    public void setPos(int desiredPosition) {
+    public void setShoulderPosition(int desiredPosition) {
         this.desiredPosition = desiredPosition;
         positionMode = true;
     }
 
-    public void setSpeed(double speed) {
+	public void getShoulderPosition() {
+		return shoulderMotor.getEncoder().getPosition();
+	}
+
+    public void setShoulderSpeed(double speed) {
         this.speed = speed;
         positionMode = false;
     }

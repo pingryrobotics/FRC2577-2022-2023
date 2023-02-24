@@ -38,24 +38,30 @@ public class Claw extends SubsystemBase {
         else armMotor.set(speed);
 	}
 
-	public void setSpeed(double speed) {
+	public void moveClawDirection(int direction) {
+        clawMotor.set(direction * Constants.MechanismConstants.kClawSpeed);
+    }
+
+	public void setClawSpeed(double speed) {
 		this.speed = speed;
 		positionMode = false;
 	}
 
-	public void setPos(int desiredPosition) {
+	public void setClawPosition(int desiredPosition) {
         this.desiredPosition = desiredPosition;
         positionMode = true;
     }
 
+	public void getClawPosition() {
+		return clawMotor.getEncoder().getPosition();
+	}
+
 	public void open() {
-		this.desiredPosition = Constants.MechanismConstants.kClawOpenPosition;
-		positionMode = true;
+		this.setClawPosition(Constants.MechanismConstants.kClawOpenPosition);
 	}
 
 	public void close() {
-		this.desiredPosition = Constants.MechanismConstants.kClawClosedPosition;
-		positionMode = true;
+		this.setClawPosition(Constants.MechanismConstants.kClawClosedPosition);
 	}
 
 	public void stop() {
