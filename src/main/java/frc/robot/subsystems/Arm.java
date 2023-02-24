@@ -52,6 +52,7 @@ public class Arm extends SubsystemBase {
 
     public void setArmSpeed(double speed) {
         this.speed = speed;
+        positionMode = false;
     }
 
     public void stop() {

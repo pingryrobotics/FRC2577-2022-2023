@@ -29,6 +29,8 @@ public final class Constants {
     public static final double kShoulderSpeed = 0.5;
     public static final double kClawSpeed = 0.5;
     public static final double kArmPositionTolerance = 10;
+    public static final double kMaxArmExtension = 100;
+    public static final double kMaxArmRetraction = 0;
   }
 
   public static final class DriveConstants {
