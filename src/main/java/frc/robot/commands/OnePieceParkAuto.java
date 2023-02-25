@@ -62,7 +62,7 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
         // we will start right in front of a cube node (either left center or right)
         Pose2d startPose;
 
-        double startXPos = Grids.outerX + Constants.DriveConstants.kWheelBase;
+        double startXPos = Grids.outerX + Constants.DriveConstants.kWheelBase/2;
 
         // only waypoint: x is halfway between initial position and close edge of charging station, y is exactly in the center (will be edited)
         List<Translation2d> waypoints = List.of(new Translation2d((startXPos + Community.chargingStationInnerX)/2, Grids.nodeFirstY + 4 * Grids.nodeSeparationY));
