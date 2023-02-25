@@ -34,9 +34,9 @@ public final class FieldConstants {
     // Region dimensions
     public static final double innerX = 0.0;
     public static final double midX =
-        Units.inchesToMeters(132.375); // Tape to the left of charging station
+        Units.inchesToMeters(132.375); // Charging station tape closer to DS
     public static final double outerX =
-        Units.inchesToMeters(193.25); // Tape to the right of charging station
+        Units.inchesToMeters(193.25); // CHarging station tape further away from DS
     public static final double leftY = Units.feetToMeters(18.0);
     public static final double midY = leftY - Units.inchesToMeters(59.39) + tapeWidth;
     public static final double rightY = 0.0;

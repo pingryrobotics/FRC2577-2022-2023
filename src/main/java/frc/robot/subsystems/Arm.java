@@ -50,7 +50,7 @@ public class Arm extends SubsystemBase {
         positionMode = true;
     }
 
-    public void getArmPosition() {
+    public double getArmPosition() {
         return armMotor.getEncoder().getPosition();
     }
 

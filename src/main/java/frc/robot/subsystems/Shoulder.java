@@ -46,7 +46,7 @@ public class Shoulder extends SubsystemBase {
         positionMode = true;
     }
 
-	public void getShoulderPosition() {
+	public double getShoulderPosition() {
 		return shoulderMotor.getEncoder().getPosition();
 	}
 

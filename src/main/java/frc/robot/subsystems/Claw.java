@@ -34,8 +34,9 @@ public class Claw extends SubsystemBase {
             if (Math.abs(clawPos - desiredPosition) < Constants.MechanismConstants.kClawPositionTolerance) clawMotor.set(0);
 			else if (clawPos > desiredPosition) clawMotor.set(-Constants.MechanismConstants.kClawSpeed);
             else if (clawPos < desiredPosition) clawMotor.set(Constants.MechanismConstants.kClawSpeed);
+		} else {
+			clawMotor.set(speed);
 		}
-        else armMotor.set(speed);
 	}
 
 	public void moveClawDirection(int direction) {
@@ -47,12 +48,12 @@ public class Claw extends SubsystemBase {
 		positionMode = false;
 	}
 
-	public void setClawPosition(int desiredPosition) {
+	public void setClawPosition(double desiredPosition) {
         this.desiredPosition = desiredPosition;
         positionMode = true;
     }
 
-	public void getClawPosition() {
+	public double getClawPosition() {
 		return clawMotor.getEncoder().getPosition();
 	}
 

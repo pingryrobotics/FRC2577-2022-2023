@@ -5,7 +5,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Claw;
 
 /** An example command that uses an example subsystem. */
-public class CloseClaw extends CommandBase {
+public class CloseClawPos extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Claw m_claw;
 
@@ -14,7 +14,7 @@ public class CloseClaw extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public CloseClaw(Claw claw) {
+    public CloseClawPos(Claw claw) {
     	m_claw = claw;
     	// Use addRequirements() here to declare subsystem dependencies.
     	addRequirements(claw);
@@ -41,6 +41,6 @@ public class CloseClaw extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-    	return Math.abs(mClaw.getClawPosition() - Constants.MechanismConstants.kClawClosedPosition) < Constants.MechanismConstants.kClawPositionTolerance;
+    	return Math.abs(m_claw.getClawPosition() - Constants.MechanismConstants.kClawClosedPosition) < Constants.MechanismConstants.kClawPositionTolerance;
     }
 }

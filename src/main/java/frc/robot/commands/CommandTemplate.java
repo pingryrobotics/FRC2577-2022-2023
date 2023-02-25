@@ -1,11 +1,11 @@
-package frc.robot.commands.commands; //CTV
+package frc.robot.commands; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Claw; //CTV
+import frc.robot.subsystems.ExampleSubsystem; //CTV
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends CommandBase {
+public class CommandTemplate extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final ExampleSubsystem m_subsystem;
 
@@ -14,7 +14,7 @@ public class ExampleCommand extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public ExampleCommand(ExampleSubsystem subsystem) {
+    public CommandTemplate(ExampleSubsystem subsystem) {
         m_subsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
