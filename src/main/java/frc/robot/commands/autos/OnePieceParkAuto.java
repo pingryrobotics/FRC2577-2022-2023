@@ -76,27 +76,36 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
             // left
             case 0:
                 // nodeFirstY + 7*nodeSeparationY is the last node
-                startPose = new Pose2d(startXPos, Grids.nodeFirstY + 7 * Grids.nodeSeparationY, new Rotation2d(0));
-                waypoints.get(0).plus(new Translation2d(0, Grids.nodeSeparationY));
-                // if we are on the left, we need to move the end pose to the left to make room for the other robots
-                endPose = endPose.plus(
-                        new Transform2d(new Translation2d(0, Community.chargingStationWidth / 3), new Rotation2d(0)));
+                // startPose = new Pose2d(startXPos, Grids.nodeFirstY + 7 * Grids.nodeSeparationY, new Rotation2d(0));
+                // waypoints.get(0).plus(new Translation2d(0, Grids.nodeSeparationY));
+                // // if we are on the left, we need to move the end pose to the left to make room for the other robots
+                // endPose = endPose.plus(
+                //         new Transform2d(new Translation2d(0, Community.chargingStationWidth / 3), new Rotation2d(0)));
+                startPose = new Pose2d(1.8, 4.4, new Rotation2d(0));
+                waypoints = List.of(new Translation2d(2.11, 3.77), new Translation2d(2.88, 3.46));
+                endPose = new Pose2d(4.07, 3.60, new Rotation2d(0));
 
             // center
             case 1:
                 // nodeFirstY + 4*nodeSeparationY is the fourth node (indexed from 0)
-                startPose = new Pose2d(startXPos, Grids.nodeFirstY + 4 * Grids.nodeSeparationY, new Rotation2d(0));
-                waypoints.get(0).plus(new Translation2d(0, 0));
-                // if we are in the center, we leave endpose as is
+                // startPose = new Pose2d(startXPos, Grids.nodeFirstY + 4 * Grids.nodeSeparationY, new Rotation2d(0));
+                // waypoints.get(0).plus(new Translation2d(0, 0));
+                // // if we are in the center, we leave endpose as is
+                startPose = new Pose2d(1.8, 2.76, new Rotation2d(0));
+                waypoints = List.of();
+                endPose = new Pose2d(4, 2.76, new Rotation2d(0));
 
             // right
             default:
                 // nodeFirstY + 1*nodeSeparationY is the first node (indexed from 0)
-                startPose = new Pose2d(startXPos, Grids.nodeFirstY + 1 * Grids.nodeSeparationY, new Rotation2d(0));
-                waypoints.get(0).plus(new Translation2d(0, -Grids.nodeSeparationY));
-                // if we are on the right, we need to move the end pose to the right to make room for the other robots
-                endPose = endPose.plus(
-                        new Transform2d(new Translation2d(0, -Community.chargingStationWidth / 3), new Rotation2d(0)));
+                // startPose = new Pose2d(startXPos, Grids.nodeFirstY + 1 * Grids.nodeSeparationY, new Rotation2d(0));
+                // waypoints.get(0).plus(new Translation2d(0, -Grids.nodeSeparationY));
+                // // if we are on the right, we need to move the end pose to the right to make room for the other robots
+                // endPose = endPose.plus(
+                //         new Transform2d(new Translation2d(0, -Community.chargingStationWidth / 3), new Rotation2d(0)));
+                startPose = new Pose2d(1.8, 1.07, new Rotation2d(0));
+                waypoints = List.of(new Translation2d(2.11, 1.8), new Translation2d(2.88, 2.11));
+                endPose = new Pose2d(4.07, 1.97, new Rotation2d(0));
             // // blue left
             // case 3:
             //     startPose = new Pose2d(0, 0, new Rotation2d(0));
