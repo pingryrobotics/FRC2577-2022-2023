@@ -1,3 +1,5 @@
+// DEPRECATED - DOESN'T USE SOLENOIDS
+
 package frc.robot.commands.claw_commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;

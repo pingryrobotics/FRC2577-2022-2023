@@ -24,17 +24,30 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final class MechanismConstants {
-    public static final double kArmSpeed = 0.5;
-    public static final double kShoulderSpeed = 0.5;
-    public static final double kClawSpeed = 0.5;
-    public static final double kArmPositionTolerance = 10;
-    public static final double kClawPositionTolerance = 10;
-    public static final double kShoulderPositionTolerance = 10;
-    public static final double kMaxArmExtension = 100;
-    public static final double kMaxArmRetraction = 0;
-    public static final double kClawOpenPosition = 20;
-    public static final double kClawClosedPosition = 0;
+  public static final class MechanismConstants { // remove the "FINE TUNE VALUE" comments as you tweak them
+    public static final double kArmSpeed = 0.5; // FINE TUNE VALUE
+    public static final double kShoulderSpeed = 0.5; // FINE TUNE VALUE
+    public static final double kClawSpeed = 0.5; // FINE TUNE VALUE
+
+    public static final double kArmPositionTolerance = 10; // FINE TUNE VALUE
+    public static final double kClawPositionTolerance = 10; // FINE TUNE VALUE
+    public static final double kShoulderPositionTolerance = 10; // FINE TUNE VALUE
+
+    public static final double kMaxArmExtension = 100; // FINE TUNE VALUE
+    public static final double kMaxArmRetraction = 0; // FINE TUNE VALUE
+    public static final double kMaxShoulderRotation = 100; // FINE TUNE VALUE
+    public static final double kMinShoulderRotation = 0; // FINE TUNE VALUE
+
+    public static final double kClawOpenPosition = 20; // FINE TUNE VALUE
+    public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
+
+    public static final double kshoulderLowPosition = 0; // FINE TUNE VALUE
+    public static final double kshoulderMidPosition = 20; // FINE TUNE VALUE
+    public static final double kshoulderHighPosition = 50; // FINE TUNE VALUE
+
+    public static final double kArmLowExtension = 0; // FINE TUNE VALUE
+    public static final double kArmMidExtension = 20; // FINE TUNE VALUE
+    public static final double kArmHighExtension = 40; // FINE TUNE VALUE
 
     public static final int kArmID = 0;
     public static final int kShoulderID = 0;

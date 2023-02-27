@@ -28,8 +28,13 @@ public class Shoulder extends SubsystemBase {
 	@Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if (positionMode) {
-			double shoulderPos = shoulderMotor.getEncoder().getPosition();
+		double shoulderPos = shoulderMotor.getEncoder().getPosition();
+
+        // stop from going too far
+        if (shoulderPos < Constants.MechanismConstants.kMinShoulderRotation || shoulderPos > Constants.MechanismConstants.kMaxShoulderRotation) shoulderMotor.set(0);
+        
+        // run normally
+        else if (positionMode) {
             if (Math.abs(shoulderPos - desiredPosition) < Constants.MechanismConstants.kShoulderPositionTolerance) shoulderMotor.set(0);
             else if (shoulderPos > desiredPosition) shoulderMotor.set(-Constants.MechanismConstants.kShoulderSpeed);
             else if (shoulderPos < desiredPosition) shoulderMotor.set(Constants.MechanismConstants.kShoulderSpeed);

@@ -1,48 +1,45 @@
-// DEPRECATED - DOESN'T USE SOLENOIDS
-
-package frc.robot.commands.claw_commands;
+package frc.robot.commands.shoulder_commands; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Shoulder;
+import frc.robot.subsystems.ExampleSubsystem; //CTV
 
 /** An example command that uses an example subsystem. */
-public class OpenClawPos extends CommandBase {
+public class ShoulderToLow extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final Claw m_claw;
+    private final Shoulder m_shoulder;
 
-	/**
+    /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public OpenClawPos(Claw claw) {
-    	m_claw = claw;
-    	// Use addRequirements() here to declare subsystem dependencies.
-    	addRequirements(claw);
+    public ShoulderToLow(Shoulder shoulder) {
+        m_shoulder = shoulder;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(shoulder);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-    	m_claw.open();
+        m_shoulder.setShoulderPosition(Constants.MechanismConstants.kshoulderLowPosition);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-    	System.out.println("Claw position: " + m_claw.getClawPosition());
+        System.out.println("Shoulder position: " + m_shoulder.getShoulderPosition());
     }
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-		m_claw.stop();
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-    	return Math.abs(m_claw.getClawPosition() - Constants.MechanismConstants.kClawOpenPosition) < Constants.MechanismConstants.kClawPositionTolerance;
+        return true;
     }
 }
