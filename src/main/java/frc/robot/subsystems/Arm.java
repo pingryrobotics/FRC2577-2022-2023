@@ -28,17 +28,18 @@ public class Arm extends SubsystemBase {
 	@Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if (positionMode) {
-            if (Math.abs(armMotor.getEncoder().getPosition() - desiredPosition) < Constants.MechanismConstants.kArmPositionTolerance) {
-                armMotor.set(0);
-            } else if (armMotor.getEncoder().getPosition() > desiredPosition) {
-                armMotor.set(-Constants.MechanismConstants.kArmSpeed);
-            } else if (armMotor.getEncoder().getPosition() < desiredPosition) {
-                armMotor.set(Constants.MechanismConstants.kArmSpeed);
-            }
-        } else {
-            armMotor.set(speed);
+        armPos = armMotor.getEncoder().getPosition();
+
+        // stop from going too far
+        if (armPos < Constants.MechanismConstants.kMaxArmRetraction || armPos > Constants.MechanismConstants.kMaxArmExtension) armMotor.set(0);
+        
+        // run normally
+        else if (positionMode) {
+            if (Math.abs( - desiredPosition) < Constants.MechanismConstants.kArmPositionTolerance) armMotor.set(0);
+            else if (armMotor.getEncoder().getPosition() > desiredPosition) armMotor.set(-Constants.MechanismConstants.kArmSpeed);
+            else if (armMotor.getEncoder().getPosition() < desiredPosition) armMotor.set(Constants.MechanismConstants.kArmSpeed);
         }
+        else armMotor.set(speed);
     }
     
     public void moveArmDirection(int direction) {
