@@ -1,37 +1,35 @@
-// DEPRECATED - DOESN'T USE SOLENOIDS
-
-package frc.robot.commands.claw_commands;
+package frc.robot.commands.arm_commands; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Arm; //CTV
 
 /** An example command that uses an example subsystem. */
-public class StopClaw extends CommandBase {
+public class ArmRetractSlow extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final Claw m_claw;
+    private final Arm m_arm;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public StopClaw(Claw claw) {
-        m_claw = claw;
+    public ArmRetractSlow(Arm arm) {
+        m_arm = arm;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(claw);
+        addRequirements(arm);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_claw.stop();
+        m_arm.moveArmDirection(-Constants.MechanismConstants.kSlowdownMultiplier);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        System.out.println("Claw position: " + m_claw.getClawPosition());
+        System.out.println("Arm position: " + m_arm.getArmPosition());
     }
 
     // Called once the command ends or is interrupted.

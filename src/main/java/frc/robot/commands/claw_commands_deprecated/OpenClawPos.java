@@ -1,13 +1,13 @@
 // DEPRECATED - DOESN'T USE SOLENOIDS
 
-package frc.robot.commands.claw_commands;
+package frc.robot.commands.claw_commands_deprecated;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Claw;
 
 /** An example command that uses an example subsystem. */
-public class CloseClawPos extends CommandBase {
+public class OpenClawPos extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Claw m_claw;
 
@@ -16,7 +16,7 @@ public class CloseClawPos extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public CloseClawPos(Claw claw) {
+    public OpenClawPos(Claw claw) {
     	m_claw = claw;
     	// Use addRequirements() here to declare subsystem dependencies.
     	addRequirements(claw);
@@ -25,7 +25,7 @@ public class CloseClawPos extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-    	m_claw.close();
+    	m_claw.setClawPosition(kClawOpenPosition);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -43,6 +43,6 @@ public class CloseClawPos extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-    	return Math.abs(m_claw.getClawPosition() - Constants.MechanismConstants.kClawClosedPosition) < Constants.MechanismConstants.kClawPositionTolerance;
+    	return Math.abs(m_claw.getClawPosition() - Constants.MechanismConstants.kClawOpenPosition) < Constants.MechanismConstants.kClawPositionTolerance;
     }
 }

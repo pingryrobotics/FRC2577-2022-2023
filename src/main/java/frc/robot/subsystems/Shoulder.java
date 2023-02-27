@@ -44,6 +44,7 @@ public class Shoulder extends SubsystemBase {
     
     public void moveShoulderDirection(int direction) {
         shoulderMotor.set(direction * Constants.MechanismConstants.kShoulderSpeed);
+        positionMode = false;
     }
 
     public void setShoulderPosition(int desiredPosition) {
@@ -62,5 +63,7 @@ public class Shoulder extends SubsystemBase {
 
     public void stop() {
         shoulderMotor.set(0);
+        desiredPosition = shoulderMotor.getEncoder().getPosition();
+        positionMode = true;
     }
 }

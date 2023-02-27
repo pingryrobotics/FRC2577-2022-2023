@@ -5,6 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+// DEPRECATED - DOESN'T USE SOLENOIDS
+// REWRITE TO USE SOLENOIDS
+
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,7 +37,8 @@ public class Claw extends SubsystemBase {
             if (Math.abs(clawPos - desiredPosition) < Constants.MechanismConstants.kClawPositionTolerance) clawMotor.set(0);
 			else if (clawPos > desiredPosition) clawMotor.set(-Constants.MechanismConstants.kClawSpeed);
             else if (clawPos < desiredPosition) clawMotor.set(Constants.MechanismConstants.kClawSpeed);
-		} else {
+		} 
+		else {
 			clawMotor.set(speed);
 		}
 	}
@@ -55,14 +59,6 @@ public class Claw extends SubsystemBase {
 
 	public double getClawPosition() {
 		return clawMotor.getEncoder().getPosition();
-	}
-
-	public void open() {
-		this.setClawPosition(Constants.MechanismConstants.kClawOpenPosition);
-	}
-
-	public void close() {
-		this.setClawPosition(Constants.MechanismConstants.kClawClosedPosition);
 	}
 
 	public void stop() {

@@ -28,6 +28,7 @@ public final class Constants {
     public static final double kArmSpeed = 0.5; // FINE TUNE VALUE
     public static final double kShoulderSpeed = 0.5; // FINE TUNE VALUE
     public static final double kClawSpeed = 0.5; // FINE TUNE VALUE
+    public static final double kSlowdownMultiplier = 0.5;
 
     public static final double kArmPositionTolerance = 10; // FINE TUNE VALUE
     public static final double kClawPositionTolerance = 10; // FINE TUNE VALUE

@@ -35,9 +35,9 @@ public class Arm extends SubsystemBase {
         
         // run normally
         else if (positionMode) {
-            if (Math.abs( - desiredPosition) < Constants.MechanismConstants.kArmPositionTolerance) armMotor.set(0);
-            else if (armMotor.getEncoder().getPosition() > desiredPosition) armMotor.set(-Constants.MechanismConstants.kArmSpeed);
-            else if (armMotor.getEncoder().getPosition() < desiredPosition) armMotor.set(Constants.MechanismConstants.kArmSpeed);
+            if (Math.abs(armPos - desiredPosition) < Constants.MechanismConstants.kArmPositionTolerance) armMotor.set(0);
+            else if (armPos > desiredPosition) armMotor.set(-Constants.MechanismConstants.kArmSpeed);
+            else if (armPos < desiredPosition) armMotor.set(Constants.MechanismConstants.kArmSpeed);
         }
         else armMotor.set(speed);
     }
