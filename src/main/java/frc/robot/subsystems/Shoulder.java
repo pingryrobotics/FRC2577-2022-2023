@@ -7,7 +7,8 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
+// commented because i don't like seeing yellow dots on my sidebar - christian
+//import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
@@ -22,7 +23,7 @@ public class Shoulder extends SubsystemBase {
 	private double desiredPosition = 0;
 	private boolean positionMode = false;
     private SparkMaxPIDController m_pid;
-    private boolean pidMode = false;
+//    private boolean pidMode = false;
 
 	/**
 	 * Creates a new ExampleSubsystem.
@@ -64,7 +65,7 @@ public class Shoulder extends SubsystemBase {
         SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
     }
     
-    public void moveShoulderDirection(int direction) {
+    public void moveShoulderDirection(double direction) {
         shoulderMotor.set(direction * Constants.MechanismConstants.kShoulderSpeed);
         positionMode = false;
     }

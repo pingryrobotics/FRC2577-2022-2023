@@ -11,57 +11,46 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
-import frc.robot.Constants;
+import frc.robot.commands.claw_commands.ClawStop;
 
 public class Claw extends SubsystemBase {
-    private CANSparkMax clawMotor;
-	private double desiredPosition = 0;
-	private double speed = 0;
-	private boolean positionMode = false;
+    private DoubleSolenoid clawSolenoid;
+	private boolean state;
 
     
 	/**
 	 * Creates a new ExampleSubsystem.
 	 */
-	public Claw(CANSparkMax clawMotor) {
-		this.clawMotor = clawMotor;
+	public Claw(DoubleSolenoid clawSolenoid) {
+		this.clawSolenoid = clawSolenoid;
+		this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
+		this.setDefaultCommand(new ClawStop(this));
 	}
 
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-        if (positionMode) {
-			double clawPos = clawMotor.getEncoder().getPosition();
-            if (Math.abs(clawPos - desiredPosition) < Constants.MechanismConstants.kClawPositionTolerance) clawMotor.set(0);
-			else if (clawPos > desiredPosition) clawMotor.set(-Constants.MechanismConstants.kClawSpeed);
-            else if (clawPos < desiredPosition) clawMotor.set(Constants.MechanismConstants.kClawSpeed);
-		} 
-		else {
-			clawMotor.set(speed);
-		}
-	}
-
-	public void moveClawDirection(int direction) {
-        clawMotor.set(direction * Constants.MechanismConstants.kClawSpeed);
-    }
-
-	public void setClawSpeed(double speed) {
-		this.speed = speed;
-		positionMode = false;
-	}
-
-	public void setClawPosition(double desiredPosition) {
-        this.desiredPosition = desiredPosition;
-        positionMode = true;
-    }
-
-	public double getClawPosition() {
-		return clawMotor.getEncoder().getPosition();
 	}
 
 	public void stop() {
-		clawMotor.set(0);
+		clawSolenoid.set(DoubleSolenoid.Value.kOff);
+	}
+
+	public void close() {
+		clawSolenoid.set(DoubleSolenoid.Value.kForward);
+		state = false;
+	}
+
+	public void open() {
+		clawSolenoid.set(DoubleSolenoid.Value.kReverse);
+		state = true;
+	}
+
+	// DoubleSolenoid.toggle() is unreliable since it handles toggling away from kOff badly
+	public void toggle() {
+		if(state) close();
+		else open();
 	}
 }

@@ -1,7 +1,5 @@
 package frc.robot.commands.autos;
 
-import java.util.List;
-
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /** An example command that uses an example subsystem. */

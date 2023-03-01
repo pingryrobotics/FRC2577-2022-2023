@@ -3,7 +3,6 @@ package frc.robot.commands.shoulder_commands; //CTV
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Shoulder;
-import frc.robot.subsystems.ExampleSubsystem; //CTV
 
 /** An example command that uses an example subsystem. */
 public class ShoulderDown extends CommandBase {
