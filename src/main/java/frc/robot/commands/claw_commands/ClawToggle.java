@@ -1,4 +1,4 @@
-package frc.robot.commands_deprecated; //CTV
+package frc.robot.commands.claw_commands; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -14,7 +14,7 @@ public class ClawToggle extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public ClawPlaceholderCommand(Claw claw) {
+    public ClawToggle(Claw claw) {
         m_claw = claw;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(claw);

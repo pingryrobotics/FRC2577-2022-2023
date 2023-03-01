@@ -22,6 +22,9 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.FieldConstants.Community;
 import frc.robot.FieldConstants.Grids;
+import frc.robot.commands.shoulder_commands.*;
+import frc.robot.commands.arm_commands.*;
+import frc.robot.commands.claw_commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Claw;
@@ -40,7 +43,7 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
 	* One Piece Park Auto.
 	* Places preloaded piece (cube) onto node and parks on a third of the charge station
 	*/
-    public OnePieceParkAuto(Drive drive, Arm arm, Claw claw, Shoulder shoulder, SendableChooser<Integer> side_chooser, boolean park) {
+    public OnePieceParkAuto(Drive drive, Arm arm, Claw claw, Shoulder shoulder, SendableChooser<Integer> side_chooser, boolean place, boolean park) {
         m_robotDrive = drive;
         m_arm = arm;
         m_claw = claw;
@@ -140,12 +143,16 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
         SwerveControllerCommand toPark = TrajectoryCommandGenerator.generateCommand(traj, drive);
 
         addCommands(
-            // new RunCommand(() -> m_shoulder.setShoulderPosition(0.5), m_shoulder),
-            new WaitCommand(3.0),
-            // new RunCommand(() -> m_arm.setArmPosition(0.5), m_arm),
+            new ShoulderToHigh(m_shoulder),
+            new WaitCommand(2.0),
+            new ArmToHigh(m_arm),
             new WaitCommand(4.0),
-            // new RunCommand(() -> m_claw.setClawPosition(0.5), m_claw),
-            new WaitCommand(4.0)
+            new ClawToggle(m_claw),
+            new WaitCommand(2.0),
+            new ArmToLow(m_arm),
+            new WaitCommand(3.0),
+            new ShoulderToLow(m_shoulder),
+            new WaitCommand(1.0)
         );
         if (park) {
             addCommands(

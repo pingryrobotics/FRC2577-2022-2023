@@ -78,8 +78,9 @@ public class RobotContainer {
                         m_robotDrive));
         
         // Add commands to Autonomous Sendable Chooser
-        m_chooser.setDefaultOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true));
-        m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, false));
+        m_chooser.setDefaultOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, true));
+        m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, false));
+        m_chooser.addOption("Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, false, true));
         m_chooser.addOption("Do Nothing", new DoNothingAuto());
 
         side_chooser.setDefaultOption("Red Left", 0);
