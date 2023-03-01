@@ -38,13 +38,11 @@ public final class Constants {
     public static final double kMaxArmRetraction = 0; // FINE TUNE VALUE
     public static final double kMaxShoulderRotation = 100; // FINE TUNE VALUE
     public static final double kMinShoulderRotation = 0; // FINE TUNE VALUE
-
-    public static final double kClawOpenPosition = 20; // FINE TUNE VALUE
     public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
 
-    public static final double kshoulderLowPosition = 0; // FINE TUNE VALUE
-    public static final double kshoulderMidPosition = 20; // FINE TUNE VALUE
-    public static final double kshoulderHighPosition = 50; // FINE TUNE VALUE
+    public static final double kShoulderLowPosition = 0; // FINE TUNE VALUE
+    public static final double kShoulderMidPosition = 20; // FINE TUNE VALUE
+    public static final double kShoulderHighPosition = 50; // FINE TUNE VALUE
 
     public static final double kArmLowExtension = 0; // FINE TUNE VALUE
     public static final double kArmMidExtension = 20; // FINE TUNE VALUE

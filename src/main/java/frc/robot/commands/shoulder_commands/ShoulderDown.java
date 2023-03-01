@@ -24,7 +24,7 @@ public class ShoulderDown extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_shoulder.moveShoulderDirection(-1);
+        m_shoulder.moveShoulderDirection(Constants.MechanismConstants.kShoulderSpeed);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

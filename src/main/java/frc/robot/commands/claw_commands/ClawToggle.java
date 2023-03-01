@@ -1,36 +1,35 @@
-package frc.robot.commands.shoulder_commands; //CTV
+package frc.robot.commands_deprecated; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Shoulder;
-import frc.robot.subsystems.ExampleSubsystem; //CTV
+import frc.robot.subsystems.Claw; //CTV
 
 /** An example command that uses an example subsystem. */
-public class ShoulderToMid extends CommandBase {
+public class ClawToggle extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final Shoulder m_shoulder;
+    private final Claw m_claw;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public ShoulderToMid(Shoulder shoulder) {
-        m_shoulder = shoulder;
+    public ClawPlaceholderCommand(Claw claw) {
+        m_claw = claw;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shoulder);
+        addRequirements(claw);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_shoulder.setShoulderPosition(Constants.MechanismConstants.kShoulderMidPosition);
+
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        System.out.println("Shoulder position: " + m_shoulder.getShoulderPosition());
+
     }
 
     // Called once the command ends or is interrupted.
