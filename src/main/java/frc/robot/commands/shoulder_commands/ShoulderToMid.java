@@ -24,7 +24,7 @@ public class ShoulderToMid extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_shoulder.setShoulderPosition(Constants.MechanismConstants.kShoulderMidPosition);
+        m_shoulder.setDesiredRotations(Constants.MechanismConstants.kshoulderMidPosition);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

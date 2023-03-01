@@ -28,7 +28,7 @@ public class Arm extends SubsystemBase {
 	@Override
     public void periodic() {
         // This method will be called once per scheduler run
-        armPos = armMotor.getEncoder().getPosition();
+        double armPos = armMotor.getEncoder().getPosition();
 
         // stop from going too far
         if (armPos < Constants.MechanismConstants.kMaxArmRetraction || armPos > Constants.MechanismConstants.kMaxArmExtension) armMotor.set(0);

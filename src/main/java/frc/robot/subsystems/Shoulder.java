@@ -7,8 +7,12 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.SparkMaxPIDController;
 
 import frc.robot.Constants;
 
@@ -17,12 +21,21 @@ public class Shoulder extends SubsystemBase {
 	private double speed = 0;
 	private double desiredPosition = 0;
 	private boolean positionMode = false;
+    private SparkMaxPIDController m_pid;
+    private boolean pidMode = false;
 
 	/**
 	 * Creates a new ExampleSubsystem.
 	 */
 	public Shoulder(CANSparkMax shoulderMotor) {
 		this.shoulderMotor = shoulderMotor;
+        this.m_pid = shoulderMotor.getPIDController();
+        m_pid.setP(Constants.MechanismConstants.kShoulderP);
+        m_pid.setI(Constants.MechanismConstants.kShoulderI);
+        m_pid.setD(Constants.MechanismConstants.kShoulderD);
+        m_pid.setIZone(Constants.MechanismConstants.kShoulderIZone);
+        m_pid.setFF(Constants.MechanismConstants.kShoulderFF);
+        m_pid.setOutputRange(Constants.MechanismConstants.kShoulderMinOutput, Constants.MechanismConstants.kShoulderMaxOutput);
 	}
 
 	@Override
@@ -31,15 +44,24 @@ public class Shoulder extends SubsystemBase {
 		double shoulderPos = shoulderMotor.getEncoder().getPosition();
 
         // stop from going too far
-        if (shoulderPos < Constants.MechanismConstants.kMinShoulderRotation || shoulderPos > Constants.MechanismConstants.kMaxShoulderRotation) shoulderMotor.set(0);
-        
+        if (shoulderPos < Constants.MechanismConstants.kMinShoulderRotation
+                || shoulderPos > Constants.MechanismConstants.kMaxShoulderRotation)
+            shoulderMotor.set(0);
+
         // run normally
-        else if (positionMode) {
-            if (Math.abs(shoulderPos - desiredPosition) < Constants.MechanismConstants.kShoulderPositionTolerance) shoulderMotor.set(0);
-            else if (shoulderPos > desiredPosition) shoulderMotor.set(-Constants.MechanismConstants.kShoulderSpeed);
-            else if (shoulderPos < desiredPosition) shoulderMotor.set(Constants.MechanismConstants.kShoulderSpeed);
-    	}
-        else shoulderMotor.set(speed);
+        if (positionMode) {
+            m_pid.setReference(desiredPosition, ControlType.kPosition);
+            // if (Math.abs(shoulderPos - desiredPosition) < Constants.MechanismConstants.kShoulderPositionTolerance)
+                // shoulderMotor.set(0);
+            // else if (shoulderPos > desiredPosition)
+            //     shoulderMotor.set(-Constants.MechanismConstants.kShoulderSpeed);
+            // else if (shoulderPos < desiredPosition)
+            //     shoulderMotor.set(Constants.MechanismConstants.kShoulderSpeed);
+        } else {
+            shoulderMotor.set(speed);
+        }
+        SmartDashboard.putNumber("Shoulder Position (ticks)", shoulderPos);
+        SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
     }
     
     public void moveShoulderDirection(int direction) {
@@ -47,7 +69,7 @@ public class Shoulder extends SubsystemBase {
         positionMode = false;
     }
 
-    public void setShoulderPosition(int desiredPosition) {
+    public void setDesiredRotations(double desiredPosition) {
         this.desiredPosition = desiredPosition;
         positionMode = true;
     }
