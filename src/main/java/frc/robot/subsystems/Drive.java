@@ -51,6 +51,9 @@ public class Drive extends SubsystemBase {
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
 
+  public boolean m_slowMode = true;
+  public int m_reverseModeCoeff = 1;
+
   public SwerveDriveKinematics kinematics = Constants.DriveConstants.kDriveKinematics;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
@@ -253,5 +256,21 @@ public class Drive extends SubsystemBase {
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public void toggleSlowMode() {
+    if (m_slowMode) {
+      m_slowMode = false;
+      m_magLimiter = new SlewRateLimiter(Constants.DriveConstants.kMagnitudeSlewRate);
+      m_rotLimiter = new SlewRateLimiter(Constants.DriveConstants.kRotationalSlewRate);
+    } else {
+      m_slowMode = true;
+      m_magLimiter = new SlewRateLimiter(Constants.DriveConstants.kSlowModeMagnitudeSlewRate);
+      m_rotLimiter = new SlewRateLimiter(Constants.DriveConstants.kSlowModeRotationalSlewRate);
+    }
+  }
+
+  public void toggleReverseMode() {
+    m_reverseModeCoeff *= -1;
   }
 }

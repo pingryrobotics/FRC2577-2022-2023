@@ -20,6 +20,14 @@ import edu.wpi.first.math.MathUtil;
 //import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 //import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.MechanismConstants;
 //import frc.robot.Constants.DriveConstants;
@@ -30,8 +38,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Shoulder;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 //import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import java.util.List;
@@ -55,7 +61,9 @@ public class RobotContainer {
     private final Shoulder m_shoulder = new Shoulder(new CANSparkMax(MechanismConstants.kShoulderID, MotorType.kBrushless));
 
     // The driver's controller
-    XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+    // Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
+    CommandJoystick m_operatorController = new CommandJoystick(OIConstants.kOperatorControllerPort);
 
     SendableChooser<Command> m_chooser = new SendableChooser<>();
 
@@ -74,9 +82,9 @@ public class RobotContainer {
             // Turning is controlled by the X axis of the right stick.
             new RunCommand(
                 () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftY() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftX() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getRightX() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
                     true, true),
                         m_robotDrive));
         
@@ -108,10 +116,30 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(m_driverController, Button.kR1.value)
-            .whileTrue(new RunCommand(
-                () -> m_robotDrive.setX(),
-                m_robotDrive));
+        
+        /*
+        DRIVER CONTROLLER
+        */
+
+        // setX (brake robot)
+        m_driverController.y().onTrue(new RunCommand(
+            () -> m_robotDrive.setX(),
+            m_robotDrive));
+        // slow mode
+        m_driverController.leftTrigger().onTrue(new RunCommand(
+            () -> m_robotDrive.toggleSlowMode(),
+                    m_robotDrive));
+        // reverse mode
+        m_driverController.rightTrigger().onTrue(new RunCommand(
+            () -> m_robotDrive.toggleReverseMode(),
+                    m_robotDrive));
+
+        /*
+        OPERATOR CONTROLLER
+        */ 
+        // left bumper 
+        m_operatorController.button().onTrue(new command);
+
     }
 
     /**

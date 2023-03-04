@@ -158,6 +158,7 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
         if (park) {
             addCommands(
                 new RunCommand(() -> m_robotDrive.resetOdometry(traj.getInitialPose())),
+                new RunCommand(() -> m_robotDrive.toggleSlowMode()),
                 toPark.andThen(() -> m_robotDrive.setX())
             );
         }
