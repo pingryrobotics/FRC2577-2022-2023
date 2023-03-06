@@ -70,6 +70,10 @@ public class Arm extends SubsystemBase {
         positionMode = false;
     }
 
+    public void resetEncoder() {
+        armMotor.getEncoder().setPosition(0);
+    }
+
     public void setDesiredPosition(double desiredPosition) {
         this.desiredPosition = desiredPosition;
         positionMode = true;

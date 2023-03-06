@@ -34,6 +34,10 @@ import frc.robot.Constants.MechanismConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.autos.DoNothingAuto;
 import frc.robot.commands.autos.OnePieceParkAuto;
+import frc.robot.commands.arm_commands.*;
+import frc.robot.commands.claw_commands.*;
+import frc.robot.commands.drive_commands.*;
+import frc.robot.commands.shoulder_commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drive;
@@ -63,11 +67,14 @@ public class RobotContainer {
     // The driver's controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
     // Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
-    CommandJoystick m_operatorController = new CommandJoystick(OIConstants.kOperatorControllerPort);
+    CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
     SendableChooser<Command> m_chooser = new SendableChooser<>();
 
     SendableChooser<Integer> side_chooser = new SendableChooser<>();
+
+    private boolean leftJoystickPressed = false;
+    private boolean rightJoystickPressed = false;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -136,10 +143,74 @@ public class RobotContainer {
 
         /*
         OPERATOR CONTROLLER
-        */ 
-        // left bumper 
-        m_operatorController.button().onTrue(new command);
+        */
+        /**
+         * Buttons:
+         * 1 (trigger): toggle claw
+         * 3: extend arm while held
+         * 2: retract arm while held
+         * 4: fully extend arm (pid)
+         * 5: fully retract arm (pid)
+         * : shoulder to level 3 height (pid)
+         * : shoulder to pickup height (pid)
+         * : shoulder to level 2 height (pid)
+         * : shoulder to level 1 height (pid)
+         * big joystick: front is extend shoulder while held, back is retract shoulder while held
+         * speed dial upper half: regular mode for arm and shoulder
+         * speed dial lower half: slow mode for arm and shoulder
+         */
 
+        // ARM COMMANDS
+        // while held, extend/retract the arm
+        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
+            new ArmMoveSpeed(m_arm, m_operatorController.getLeftY());
+            leftJoystickPressed = true;
+        } else {
+            // joystick was just pressed -- means we're transitioning from arm extension to stop
+            if (leftJoystickPressed) {
+                new ArmStop(m_arm);
+            }
+            leftJoystickPressed = false;
+        }
+
+        // extend arm fully (level 3)
+        m_operatorController.y().onTrue(new ArmToHigh(m_arm));
+        // extend arm to level 2 height
+        m_operatorController.x().onTrue(new ArmToMid(m_arm));
+        // extend arm to level 1 height
+        m_operatorController.b().onTrue(new ArmToLow(m_arm));
+        // retract arm fully
+        m_operatorController.a().onTrue(new ArmToIn(m_arm));
+        // reset arm encoder
+        m_operatorController.start().onTrue(new ArmEncoderReset(m_arm));
+
+        // CLAW COMMANDS
+        // toggle claw
+        m_operatorController.leftBumper().onTrue(new ClawToggle(m_claw));
+
+        // SHOULDER COMMANDS
+        // while held, extend/retract the shoulder
+        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
+            new ShoulderMoveSpeed(m_shoulder, m_operatorController.getRightY());
+            rightJoystickPressed = true;
+        } else {
+            // joystick was just pressed -- means we're transitioning from shoulder extension to stop
+            if (rightJoystickPressed) {
+                new ShoulderStop(m_shoulder);
+            }
+            rightJoystickPressed = false;
+        }
+
+        // move shoulder to level 3
+        m_operatorController.pov(90).onTrue(new ShoulderToHigh(m_shoulder));
+        // move shoulder to level 2
+        m_operatorController.pov(180).onTrue(new ShoulderToMid(m_shoulder));
+        // move shoulder to level 1
+        m_operatorController.pov(0).onTrue(new ShoulderToLow(m_shoulder));
+        // extend shoulder to vertical down
+        m_operatorController.pov(0).onTrue(new ShoulderToIn(m_shoulder));
+        // reset shoulder encoder
+        m_operatorController.back().onTrue(new ShoulderEncoderReset(m_shoulder));
     }
 
     /**

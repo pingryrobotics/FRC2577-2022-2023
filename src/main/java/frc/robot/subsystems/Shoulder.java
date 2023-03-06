@@ -49,7 +49,6 @@ public class Shoulder extends SubsystemBase {
                 || shoulderPos > Constants.MechanismConstants.kMaxShoulderRotation)
             shoulderMotor.set(0);
 
-        // run normally
         if (positionMode) {
             m_pid.setReference(desiredPosition, ControlType.kPosition);
             // if (Math.abs(shoulderPos - desiredPosition) < Constants.MechanismConstants.kShoulderPositionTolerance)
@@ -88,5 +87,9 @@ public class Shoulder extends SubsystemBase {
         shoulderMotor.set(0);
         desiredPosition = shoulderMotor.getEncoder().getPosition();
         positionMode = true;
+    }
+
+    public void resetEncoder() {
+        shoulderMotor.getEncoder().setPosition(0);
     }
 }
