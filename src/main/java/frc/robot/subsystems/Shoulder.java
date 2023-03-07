@@ -30,6 +30,7 @@ public class Shoulder extends SubsystemBase {
 	 */
 	public Shoulder(CANSparkMax shoulderMotor) {
 		this.shoulderMotor = shoulderMotor;
+        this.shoulderMotor.setInverted(true);
         this.m_pid = shoulderMotor.getPIDController();
         m_pid.setP(Constants.MechanismConstants.kShoulderP);
         m_pid.setI(Constants.MechanismConstants.kShoulderI);

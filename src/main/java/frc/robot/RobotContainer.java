@@ -94,12 +94,6 @@ public class RobotContainer {
                     -MathUtil.applyDeadband(m_driverController.getRightX() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
                     true, true),
                         m_robotDrive));
-        
-        // Add commands to Autonomous Sendable Chooser
-        m_chooser.setDefaultOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, true));
-        m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, false));
-        m_chooser.addOption("Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, false, true));
-        m_chooser.addOption("Do Nothing", new DoNothingAuto());
 
         side_chooser.setDefaultOption("Red Left", 0);
         side_chooser.addOption("Red Center", 1);
@@ -107,7 +101,13 @@ public class RobotContainer {
         side_chooser.addOption("Blue Left", 3);
         side_chooser.addOption("Blue Center", 4);
         side_chooser.addOption("Blue Right", 5);
-
+        
+        // Add commands to Autonomous Sendable Chooser
+        m_chooser.setDefaultOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, true));
+        m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, false));
+        m_chooser.addOption("Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, false, true));
+        m_chooser.addOption("Do Nothing", new DoNothingAuto());
+        
         // Put the chooser on the dashboard
         SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Side", side_chooser);
@@ -160,19 +160,6 @@ public class RobotContainer {
          * speed dial lower half: slow mode for arm and shoulder
          */
 
-        // ARM COMMANDS
-        // while held, extend/retract the arm
-        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
-            new ArmMoveSpeed(m_arm, m_operatorController.getRightY());
-            rightJoystickPressed = true;
-        } else {
-            // joystick was just pressed -- means we're transitioning from arm extension to stop
-            if (rightJoystickPressed) {
-                new ArmStop(m_arm);
-            }
-            rightJoystickPressed = false;
-        }
-
         // extend arm fully (level 3)
         m_operatorController.y().onTrue(new ArmToHigh(m_arm));
         // extend arm to level 2 height
@@ -189,17 +176,6 @@ public class RobotContainer {
         m_operatorController.leftBumper().onTrue(new ClawToggle(m_claw));
 
         // SHOULDER COMMANDS
-        // while held, extend/retract the shoulder
-        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
-            new ShoulderMoveSpeed(m_shoulder, m_operatorController.getLeftY());
-            leftJoystickPressed = true;
-        } else {
-            // joystick was just pressed -- means we're transitioning from shoulder extension to stop
-            if (leftJoystickPressed) {
-                new ShoulderStop(m_shoulder);
-            }
-            leftJoystickPressed = false;
-        }
 
         // move shoulder to level 3
         m_operatorController.pov(90).onTrue(new ShoulderToHigh(m_shoulder));
@@ -214,6 +190,33 @@ public class RobotContainer {
 
         SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
         SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
+    }
+
+    public void operatorMovements() {
+        // ARM COMMANDS
+        // while held, extend/retract the arm
+        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
+            m_arm.setArmSpeed(m_operatorController.getRightY());
+            rightJoystickPressed = true;
+        } else {
+            // joystick was just pressed -- means we're transitioning from arm extension to stop
+            if (rightJoystickPressed) {
+                m_arm.setArmSpeed(0);
+            }
+            rightJoystickPressed = false;
+        }
+
+        // while held, extend/retract the shoulder
+        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
+            m_shoulder.setShoulderSpeed(m_operatorController.getLeftY());
+            leftJoystickPressed = true;
+        } else {
+            // joystick was just pressed -- means we're transitioning from shoulder extension to stop
+            if (leftJoystickPressed) {
+                m_shoulder.setShoulderSpeed(0);
+            }
+            leftJoystickPressed = false;
+        }
     }
 
     /**
