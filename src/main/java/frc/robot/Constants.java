@@ -66,9 +66,9 @@ public final class Constants {
     public static final double kArmMinOutput = -1.0; // FINE TUNE VALUE
     public static final double kArmMaxOutput = 1.0; // FINE TUNE VALUE
 
-    public static final int kArmID = 0;
-    public static final int kShoulderID = 0;
-    public static final int kClawID = 0;
+    public static final int kArmID = 31;
+    public static final int kShoulderID = 30;
+    // public static final int kClawID = 0;
   }
 
   public static final class DriveConstants {

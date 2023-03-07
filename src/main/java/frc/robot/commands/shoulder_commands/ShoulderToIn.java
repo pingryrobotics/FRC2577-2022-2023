@@ -23,7 +23,7 @@ public class ShoulderToIn extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_shoulder.setDesiredRotations(0);
+        m_shoulder.setDesiredTicks(0);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

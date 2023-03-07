@@ -69,8 +69,8 @@ public class Shoulder extends SubsystemBase {
         positionMode = false;
     }
 
-    public void setDesiredRotations(double desiredPosition) {
-        this.desiredPosition = desiredPosition;
+    public void setDesiredTicks(double desiredPosition) {
+        this.desiredPosition = desiredPosition * shoulderMotor.getEncoder().getCountsPerRevolution();
         positionMode = true;
     }
 

@@ -23,7 +23,7 @@ public class ShoulderToHigh extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_shoulder.setDesiredRotations(Constants.MechanismConstants.kshoulderHighPosition);
+        m_shoulder.setDesiredTicks(Constants.MechanismConstants.kshoulderHighPosition);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

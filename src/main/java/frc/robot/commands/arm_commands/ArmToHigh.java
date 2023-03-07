@@ -23,7 +23,7 @@ public class ArmToHigh extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_arm.setDesiredPosition(Constants.MechanismConstants.kArmHighExtension);
+        m_arm.setDesiredTicks(Constants.MechanismConstants.kArmHighExtension);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

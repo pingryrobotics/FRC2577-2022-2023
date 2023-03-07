@@ -23,7 +23,7 @@ public class ArmToLow extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_arm.setDesiredPosition(Constants.MechanismConstants.kArmLowExtension);
+        m_arm.setDesiredTicks(Constants.MechanismConstants.kArmLowExtension);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

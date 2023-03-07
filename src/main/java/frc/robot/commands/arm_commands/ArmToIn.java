@@ -23,7 +23,7 @@ public class ArmToIn extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_arm.setDesiredPosition(0);
+        m_arm.setDesiredTicks(0);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

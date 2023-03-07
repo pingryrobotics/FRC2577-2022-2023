@@ -46,8 +46,9 @@ public class Arm extends SubsystemBase {
 
         // stop from going too far
         if (armPos < Constants.MechanismConstants.kMaxArmRetraction
-                || armPos > Constants.MechanismConstants.kMaxArmExtension)
+                || armPos > Constants.MechanismConstants.kMaxArmExtension) {
             armMotor.set(0);
+        }
 
         // run normally
         if (positionMode) {
@@ -74,8 +75,8 @@ public class Arm extends SubsystemBase {
         armMotor.getEncoder().setPosition(0);
     }
 
-    public void setDesiredPosition(double desiredPosition) {
-        this.desiredPosition = desiredPosition;
+    public void setDesiredTicks(double desiredPosition) {
+        this.desiredPosition = desiredPosition * armMotor.getEncoder().getCountsPerRevolution();
         positionMode = true;
     }
 

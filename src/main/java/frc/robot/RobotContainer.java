@@ -162,15 +162,15 @@ public class RobotContainer {
 
         // ARM COMMANDS
         // while held, extend/retract the arm
-        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
-            new ArmMoveSpeed(m_arm, m_operatorController.getLeftY());
-            leftJoystickPressed = true;
+        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
+            new ArmMoveSpeed(m_arm, m_operatorController.getRightY());
+            rightJoystickPressed = true;
         } else {
             // joystick was just pressed -- means we're transitioning from arm extension to stop
-            if (leftJoystickPressed) {
+            if (rightJoystickPressed) {
                 new ArmStop(m_arm);
             }
-            leftJoystickPressed = false;
+            rightJoystickPressed = false;
         }
 
         // extend arm fully (level 3)
@@ -190,15 +190,15 @@ public class RobotContainer {
 
         // SHOULDER COMMANDS
         // while held, extend/retract the shoulder
-        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
-            new ShoulderMoveSpeed(m_shoulder, m_operatorController.getRightY());
-            rightJoystickPressed = true;
+        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
+            new ShoulderMoveSpeed(m_shoulder, m_operatorController.getLeftY());
+            leftJoystickPressed = true;
         } else {
             // joystick was just pressed -- means we're transitioning from shoulder extension to stop
-            if (rightJoystickPressed) {
+            if (leftJoystickPressed) {
                 new ShoulderStop(m_shoulder);
             }
-            rightJoystickPressed = false;
+            leftJoystickPressed = false;
         }
 
         // move shoulder to level 3
@@ -211,6 +211,9 @@ public class RobotContainer {
         m_operatorController.pov(0).onTrue(new ShoulderToIn(m_shoulder));
         // reset shoulder encoder
         m_operatorController.back().onTrue(new ShoulderEncoderReset(m_shoulder));
+
+        SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
+        SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
     }
 
     /**
