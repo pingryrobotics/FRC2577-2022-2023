@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.SparkMaxPIDController;
 
 import frc.robot.Constants;
@@ -37,6 +38,7 @@ public class Arm extends SubsystemBase {
         m_pid.setIZone(Constants.MechanismConstants.kArmIZone);
         m_pid.setFF(Constants.MechanismConstants.kArmFF);
         m_pid.setOutputRange(Constants.MechanismConstants.kArmMinOutput, Constants.MechanismConstants.kArmMaxOutput);
+        armMotor.setIdleMode(IdleMode.kBrake);
 	}
 
 	@Override
