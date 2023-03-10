@@ -11,13 +11,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.commands.claw_commands.ClawStop;
 
 public class Claw extends SubsystemBase {
     private DoubleSolenoid clawSolenoid;
-	private boolean state;
+	private boolean state = false;
+	private Compressor compressor;
 
     
 	/**
@@ -26,7 +28,9 @@ public class Claw extends SubsystemBase {
 	public Claw(DoubleSolenoid clawSolenoid) {
 		this.clawSolenoid = clawSolenoid;
 		this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
-		this.setDefaultCommand(new ClawStop(this));
+		compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+		compressor.disable();
+		// this.setDefaultCommand(new ClawStop(this));
 	}
 
 	@Override
@@ -34,13 +38,24 @@ public class Claw extends SubsystemBase {
 		// This method will be called once per scheduler run
 	}
 
+	public void enableCompressor() {
+		compressor.enableDigital();
+	}
+
+	public void disableCompressor() {
+		compressor.disable();
+	}
+
 	public void stop() {
 		clawSolenoid.set(DoubleSolenoid.Value.kOff);
 	}
-
 	public void close() {
 		clawSolenoid.set(DoubleSolenoid.Value.kForward);
 		state = false;
+	}
+
+	public void toggleClawState() {
+		state = !state;
 	}
 
 	public void open() {

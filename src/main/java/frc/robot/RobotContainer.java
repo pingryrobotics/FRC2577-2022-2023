@@ -36,7 +36,7 @@ import frc.robot.commands.autos.DoNothingAuto;
 import frc.robot.commands.autos.OnePieceParkAuto;
 import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
-import frc.robot.commands.drive_commands.*;
+// import frc.robot.commands.drive_commands.*;
 import frc.robot.commands.shoulder_commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Claw;
@@ -75,6 +75,7 @@ public class RobotContainer {
 
     private boolean leftJoystickPressed = false;
     private boolean rightJoystickPressed = false;
+    private boolean driveOn = false;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -82,18 +83,6 @@ public class RobotContainer {
     public RobotContainer() {
         // Configure the button bindings
         configureButtonBindings();
-
-        // Configure default commands
-        m_robotDrive.setDefaultCommand(
-            // The left stick controls translation of the robot.
-            // Turning is controlled by the X axis of the right stick.
-            new RunCommand(
-                () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverController.getLeftY() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getLeftX() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getRightX() * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    true, true),
-                        m_robotDrive));
 
         side_chooser.setDefaultOption("Red Left", 0);
         side_chooser.addOption("Red Center", 1);
@@ -129,17 +118,33 @@ public class RobotContainer {
         */
 
         // setX (brake robot)
-        m_driverController.y().onTrue(new RunCommand(
+        m_driverController.y().whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+
+        m_driverController.a().whileTrue(new RunCommand(
+            () -> m_robotDrive.m_frontLeft.setDriveSpeed(0.1)
+        ));
+
+        m_driverController.b().whileTrue(new RunCommand(
+            () -> m_robotDrive.m_frontLeft.setTurnSpeed(0.1)
+        ));
+
+        m_driverController.leftBumper().onTrue(new RunCommand(
+            () -> m_claw.enableCompressor()
+        ));
+
+        m_driverController.rightBumper().onTrue(new RunCommand(
+            () -> m_claw.disableCompressor()
+        ));
         // slow mode
-        m_driverController.leftTrigger().onTrue(new RunCommand(
-            () -> m_robotDrive.toggleSlowMode(),
-                    m_robotDrive));
+        // m_driverController.leftTrigger().onTrue(new RunCommand(
+            // () -> m_robotDrive.toggleSlowMode(),
+                    // m_robotDrive));
         // reverse mode
-        m_driverController.rightTrigger().onTrue(new RunCommand(
-            () -> m_robotDrive.toggleReverseMode(),
-                    m_robotDrive));
+        // m_driverController.rightTrigger().onTrue(new RunCommand(
+            // () -> m_robotDrive.toggleReverseMode(),
+                    // m_robotDrive));
 
         /*
         OPERATOR CONTROLLER
@@ -175,6 +180,18 @@ public class RobotContainer {
         // toggle claw
         m_operatorController.leftBumper().onTrue(new ClawToggle(m_claw));
 
+        m_operatorController.rightBumper().onTrue(new RunCommand(
+            () -> m_claw.toggleClawState()
+        ));
+
+        m_operatorController.leftTrigger().onTrue(new RunCommand(
+            () -> m_claw.open()
+        ));
+
+        m_operatorController.rightTrigger().onTrue(new RunCommand(
+            () -> m_claw.close()
+        ));
+
         // SHOULDER COMMANDS
 
         // move shoulder to level 3
@@ -190,6 +207,23 @@ public class RobotContainer {
 
         SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
         SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
+    }
+
+    public void driveControl() {
+        if ((Math.abs(m_driverController.getLeftX()) > 0.1) || (Math.abs(m_driverController.getLeftY()) > 0.1) || (Math.abs(m_driverController.getRightX()) > 0.1)) {
+            m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                false, true);
+            driveOn = true;
+        } else {
+            if (driveOn) {
+                // m_robotDrive.drive(0, 0, 0, true, true);
+                m_robotDrive.stop();
+            }
+            driveOn = false;
+        }
     }
 
     public void operatorMovements() {

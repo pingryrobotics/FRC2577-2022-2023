@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+// commented because i don't like seeing yellow dots on my sidebar - christian
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+//import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -14,28 +16,29 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drive extends SubsystemBase {
+public class DrivePrev extends SubsystemBase {
   // Create MAXSwerveModules
-  public final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
+  private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
       DriveConstants.kFrontLeftChassisAngularOffset);
 
-  public final MAXSwerveModule m_frontRight = new MAXSwerveModule(
+  private final MAXSwerveModule m_frontRight = new MAXSwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
       DriveConstants.kFrontRightChassisAngularOffset);
 
-  public final MAXSwerveModule m_rearLeft = new MAXSwerveModule(
+  private final MAXSwerveModule m_rearLeft = new MAXSwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
       DriveConstants.kBackLeftChassisAngularOffset);
 
-  public final MAXSwerveModule m_rearRight = new MAXSwerveModule(
+  private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
@@ -47,6 +50,11 @@ public class Drive extends SubsystemBase {
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
+
+  public boolean m_slowMode = true;
+  public int m_reverseModeCoeff = 1;
+
+  public SwerveDriveKinematics kinematics = Constants.DriveConstants.kDriveKinematics;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
@@ -64,7 +72,7 @@ public class Drive extends SubsystemBase {
       });
 
   /** Creates a new DriveSubsystem. */
-  public Drive() {
+  public DrivePrev() {
   }
 
   @Override
@@ -153,7 +161,7 @@ public class Drive extends SubsystemBase {
         }
       }
       else {
-        m_currentTranslationDir = Math.toRadians(SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime));
+        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(0.0);
       }
       m_prevTime = currentTime;
@@ -180,7 +188,6 @@ public class Drive extends SubsystemBase {
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    // swerveModuleStates[0].angle += 135;
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
@@ -195,13 +202,6 @@ public class Drive extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-  }
-
-  public void setY() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
   }
 
   /**
@@ -231,15 +231,6 @@ public class Drive extends SubsystemBase {
     m_gyro.reset();
   }
 
-  /**
-   * Returns the heading of the robot.
-   *
-   * @return the robot's heading in degrees, from -180 to 180
-   */
-  public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
-  }
-
   public void stop() {
     setModuleStates(new SwerveModuleState[] {
         new SwerveModuleState(0, new Rotation2d()),
@@ -250,11 +241,36 @@ public class Drive extends SubsystemBase {
   }
 
   /**
+   * Returns the heading of the robot.
+   *
+   * @return the robot's heading in degrees, from -180 to 180
+   */
+  public double getHeading() {
+    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
+  }
+
+  /**
    * Returns the turn rate of the robot.
    *
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public void toggleSlowMode() {
+    if (m_slowMode) {
+      m_slowMode = false;
+      m_magLimiter = new SlewRateLimiter(Constants.DriveConstants.kMagnitudeSlewRate);
+      m_rotLimiter = new SlewRateLimiter(Constants.DriveConstants.kRotationalSlewRate);
+    } else {
+      m_slowMode = true;
+      m_magLimiter = new SlewRateLimiter(Constants.DriveConstants.kSlowModeMagnitudeSlewRate);
+      m_rotLimiter = new SlewRateLimiter(Constants.DriveConstants.kSlowModeRotationalSlewRate);
+    }
+  }
+
+  public void toggleReverseMode() {
+    m_reverseModeCoeff *= -1;
   }
 }
