@@ -24,6 +24,8 @@ public class Arm extends SubsystemBase {
 	private double desiredPosition = 0;
 	private boolean positionMode = false;
     private SparkMaxPIDController m_pid;
+    private boolean armLimitEnabled = true;
+
 //    private boolean pidMode = false;
 
 	/**
@@ -46,10 +48,24 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
 		double armPos = armMotor.getEncoder().getPosition();
 
-        // stop from going too far
-        if (armPos < Constants.MechanismConstants.kMaxArmRetraction
-                || armPos > Constants.MechanismConstants.kMaxArmExtension) {
-            armMotor.set(0);
+        SmartDashboard.putNumber("Arm Position (rotations)", armPos);
+        SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
+
+        // stop from going too farn
+        if (armLimitEnabled) {
+            // extending decreases ticks
+            if (armPos >= Constants.MechanismConstants.kMaxArmRetraction) {
+                if (speed > 0) {
+                    armMotor.set(0);
+                    return;
+                }
+            } 
+            // else if (armPos <= Constants.MechanismConstants.kMaxArmExtension) {
+            //     if (speed < 0) {
+            //         armMotor.set(0);
+            //         return;
+            //     }
+            // }
         }
 
         // run normally
@@ -64,12 +80,14 @@ public class Arm extends SubsystemBase {
         } else {
             armMotor.set(speed);
         }
-        SmartDashboard.putNumber("arm Position (ticks)", armPos);
-        SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
+    }
+
+    public void toggleArmLimit() {
+        armLimitEnabled = !armLimitEnabled;
     }
     
     public void moveArmDirection(double direction) {
-        armMotor.set(direction * Constants.MechanismConstants.kArmSpeed);
+        speed = direction * Constants.MechanismConstants.kArmSpeed;
         positionMode = false;
     }
 
@@ -78,7 +96,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setDesiredTicks(double desiredPosition) {
-        this.desiredPosition = desiredPosition * armMotor.getEncoder().getCountsPerRevolution();
+        this.desiredPosition = desiredPosition;
         positionMode = true;
     }
 
@@ -92,8 +110,10 @@ public class Arm extends SubsystemBase {
     }
 
     public void stop() {
-        armMotor.set(0);
-        desiredPosition = armMotor.getEncoder().getPosition();
-        positionMode = true;
+        // armMotor.set(0);
+        speed = 0;
+        positionMode = false;
+        // desiredPosition = armMotor.getEncoder().getPosition();
+        // positionMode = true;
     }
 }

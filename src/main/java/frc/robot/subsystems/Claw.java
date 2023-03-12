@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.commands.claw_commands.ClawStop;
 
 public class Claw extends SubsystemBase {
     private DoubleSolenoid clawSolenoid;
+	// private Solenoid singleSolenoid;
 	private boolean state = false;
 	private Compressor compressor;
 
@@ -27,9 +29,12 @@ public class Claw extends SubsystemBase {
 	 */
 	public Claw(DoubleSolenoid clawSolenoid) {
 		this.clawSolenoid = clawSolenoid;
-		this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
+		// this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
+		// this.singleSolenoid = solenoid;
+		// solenoid.set(true);
 		compressor = new Compressor(PneumaticsModuleType.CTREPCM);
-		compressor.disable();
+		this.clawSolenoid.set(DoubleSolenoid.Value.kForward);
+		// compressor.disable();
 		// this.setDefaultCommand(new ClawStop(this));
 	}
 
@@ -50,15 +55,20 @@ public class Claw extends SubsystemBase {
 		clawSolenoid.set(DoubleSolenoid.Value.kOff);
 	}
 	public void close() {
+		// singleSolenoid.set(true);
+		// clawSolenoid.toggle();
 		clawSolenoid.set(DoubleSolenoid.Value.kForward);
 		state = false;
 	}
 
 	public void toggleClawState() {
 		state = !state;
+		clawSolenoid.toggle();
 	}
 
 	public void open() {
+		// singleSolenoid.set(true);
+		// clawSolenoid.toggle();
 		clawSolenoid.set(DoubleSolenoid.Value.kReverse);
 		state = true;
 	}

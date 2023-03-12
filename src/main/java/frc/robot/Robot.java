@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.calibrateGyro();
   }
 
   /**
@@ -44,8 +45,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.operatorMovements();
-    m_robotContainer.driveControl();
+    m_robotContainer.containerPeriodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
      */
 
     // schedule the autonomous command (example)
+    m_robotContainer.resetEncodersAndGyro();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -83,6 +84,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    m_robotContainer.resetEncodersAndGyro();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -95,7 +97,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    // CommandScheduler.getInstance().cancelAll();
   }
 
   /** This function is called periodically during test mode. */

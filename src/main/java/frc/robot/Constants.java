@@ -25,8 +25,8 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class MechanismConstants { // remove the "FINE TUNE VALUE" comments as you tweak them
-    public static final double kArmSpeed = 0.5; // FINE TUNE VALUE
-    public static final double kShoulderSpeed = 0.5; // FINE TUNE VALUE
+    public static final double kArmSpeed = 1; // FINE TUNE VALUE
+    public static final double kShoulderSpeed = 0.3; // FINE TUNE VALUE
     public static final double kClawSpeed = 0.5; // FINE TUNE VALUE
     public static final double kSlowdownMultiplier = 0.5;
 
@@ -34,19 +34,19 @@ public final class Constants {
     public static final double kClawPositionTolerance = 10; // FINE TUNE VALUE
     public static final double kShoulderPositionTolerance = 10; // FINE TUNE VALUE
 
-    public static final double kMaxArmExtension = 100; // FINE TUNE VALUE
-    public static final double kMaxArmRetraction = 0; // FINE TUNE VALUE
-    public static final double kMaxShoulderRotation = 100; // FINE TUNE VALUE
-    public static final double kMinShoulderRotation = 0; // FINE TUNE VALUE
-    public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
+    public static final double kMaxArmExtension = -100; // FINE TUNE VALUE
+    public static final double kMaxArmRetraction = 0.1; // FINE TUNE VALUE
+    public static final double kMaxShoulderRotation = 400; // FINE TUNE VALUE
+    public static final double kMinShoulderRotation = -100; // FINE TUNE VALUE
+    // public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
 
-    public static final double kshoulderLowPosition = 0; // FINE TUNE VALUE
-    public static final double kshoulderMidPosition = 20; // FINE TUNE VALUE
-    public static final double kshoulderHighPosition = 50; // FINE TUNE VALUE
+    public static final double kshoulderLowPosition = -10; // FINE TUNE VALUE
+    public static final double kshoulderMidPosition = -20; // FINE TUNE VALUE
+    public static final double kshoulderHighPosition = -50; // FINE TUNE VALUE
 
     public static final double kArmLowExtension = 0; // FINE TUNE VALUE
-    public static final double kArmMidExtension = 20; // FINE TUNE VALUE
-    public static final double kArmHighExtension = 40; // FINE TUNE VALUE
+    public static final double kArmMidExtension = -20; // FINE TUNE VALUE
+    public static final double kArmHighExtension = -40; // FINE TUNE VALUE
     
     // PID values for shoulder
     public static final double kShoulderP = 0.1; // FINE TUNE VALUE
@@ -54,8 +54,8 @@ public final class Constants {
     public static final double kShoulderD = 0.0; // FINE TUNE VALUE
     public static final double kShoulderFF = 0.0; // FINE TUNE VALUE
     public static final int kShoulderIZone = 0; // FINE TUNE VALUE
-    public static final double kShoulderMinOutput = -1.0; // FINE TUNE VALUE
-    public static final double kShoulderMaxOutput = 1.0; // FINE TUNE VALUE
+    public static final double kShoulderMinOutput = -0.2; // FINE TUNE VALUE
+    public static final double kShoulderMaxOutput = 0.2; // FINE TUNE VALUE
 
     // PID values for arm
     public static final double kArmP = 0.1; // FINE TUNE VALUE
@@ -95,10 +95,17 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 - 3 * Math.PI / 4;
+    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 - 3 * Math.PI / 4;
+    // public static final double kFrontRightChassisAngularOffset = 0;
+    // public static final double kBackLeftChassisAngularOffset = Math.PI;
+    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 - 3 * Math.PI/5 - 3 * Math.PI/4;
+
+    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2 - 3 * Math.PI/5 - 3 * Math.PI/4;
+    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+
+    public static final double kDriveSpeed = 0.5;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 13;
@@ -106,10 +113,31 @@ public final class Constants {
     public static final int kFrontRightDrivingCanId = 14;
     public static final int kRearRightDrivingCanId = 12;
 
+    // public static final int kFrontLeftDrivingCanId = 12;
+    // public static final int kRearLeftDrivingCanId = 14;
+    // public static final int kFrontRightDrivingCanId = 11;
+    // public static final int kRearRightDrivingCanId = 13;
+
     public static final int kFrontLeftTurningCanId = 23;
     public static final int kRearLeftTurningCanId = 21;
     public static final int kFrontRightTurningCanId = 24;
     public static final int kRearRightTurningCanId = 22;
+
+    // public static final int kFrontLeftTurningCanId = 22;
+    // public static final int kRearLeftTurningCanId = 24;
+    // public static final int kFrontRightTurningCanId = 21;
+    // public static final int kRearRightTurningCanId = 23;
+
+
+    // public static final int kFrontLeftDrivingCanId = 12;
+    // public static final int kRearLeftDrivingCanId = 14;
+    // public static final int kFrontRightDrivingCanId = 11;
+    // public static final int kRearRightDrivingCanId = 13;
+
+    // public static final int kFrontLeftTurningCanId = 22;
+    // public static final int kRearLeftTurningCanId = 24;
+    // public static final int kFrontRightTurningCanId = 21;
+    // public static final int kRearRightTurningCanId = 23;
 
     public static final boolean kGyroReversed = false;
   }
@@ -166,8 +194,9 @@ public final class Constants {
   }
 
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 1;
+    // public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 0;
+    public static final int kDriverJoystickPort = 1;
     public static final double kDriveDeadband = 0.05;
   }
 

@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+// commented because i don't like seeing yellow dots on my sidebar - christian
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+//import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -14,11 +16,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drive extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase {
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
@@ -41,12 +45,17 @@ public class Drive extends SubsystemBase {
       DriveConstants.kBackRightChassisAngularOffset);
 
   // The gyro sensor
-  private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
+  public final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
+
+  public boolean m_slowMode = false;
+  public int m_reverseModeCoeff = 1;
+
+  public SwerveDriveKinematics kinematics = Constants.DriveConstants.kDriveKinematics;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
@@ -64,7 +73,7 @@ public class Drive extends SubsystemBase {
       });
 
   /** Creates a new DriveSubsystem. */
-  public Drive() {
+  public DriveSubsystem() {
   }
 
   @Override
@@ -78,6 +87,9 @@ public class Drive extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+    SmartDashboard.putNumber("Gyro x", m_gyro.getGyroAngleX());
+    SmartDashboard.putNumber("Gyro y", m_gyro.getGyroAngleY());
+    SmartDashboard.putNumber("Gyro z", m_gyro.getGyroAngleZ());
   }
 
   /**
@@ -196,13 +208,6 @@ public class Drive extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
-  public void setY() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-  }
-
   /**
    * Sets the swerve ModuleStates.
    *
@@ -230,6 +235,15 @@ public class Drive extends SubsystemBase {
     m_gyro.reset();
   }
 
+  public void stop() {
+    setModuleStates(new SwerveModuleState[] {
+        new SwerveModuleState(0, new Rotation2d()),
+        new SwerveModuleState(0, new Rotation2d()),
+        new SwerveModuleState(0, new Rotation2d()),
+        new SwerveModuleState(0, new Rotation2d())
+    });
+  }
+
   /**
    * Returns the heading of the robot.
    *
@@ -246,5 +260,29 @@ public class Drive extends SubsystemBase {
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public void slowModeOn() {
+    m_slowMode = true;
+  }
+
+  public void slowModeOff() {
+    m_slowMode = false;
+  }
+
+  // public void toggleSlowMode() {
+  //   if (m_slowMode) {
+  //     m_slowMode = false;
+  //     // m_magLimiter = new SlewRateLimiter(Constants.DriveConstants.kMagnitudeSlewRate);
+  //     // m_rotLimiter = new SlewRateLimiter(Constants.DriveConstants.kRotationalSlewRate);
+  //   } else {
+  //     m_slowMode = true;
+  //     // m_magLimiter = new SlewRateLimiter(Constants.DriveConstants.kSlowModeMagnitudeSlewRate);
+  //     // m_rotLimiter = new SlewRateLimiter(Constants.DriveConstants.kSlowModeRotationalSlewRate);
+  //   }
+  // }
+
+  public void toggleReverseMode() {
+    m_reverseModeCoeff *= -1;
   }
 }

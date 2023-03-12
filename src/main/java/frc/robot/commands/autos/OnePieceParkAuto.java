@@ -28,6 +28,7 @@ import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Shoulder;
 import frc.robot.util.trajectory.TrajectoryCommandGenerator;
@@ -35,7 +36,7 @@ import frc.robot.util.trajectory.TrajectoryCommandGenerator;
 /** An example command that uses an example subsystem. */
 public class OnePieceParkAuto extends SequentialCommandGroup {
 	@SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
-    private final Drive m_robotDrive;
+    private final DriveSubsystem m_robotDrive;
     private final Arm m_arm;
     private final Claw m_claw;
     private final Shoulder m_shoulder;
@@ -44,7 +45,7 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
 	* One Piece Park Auto.
 	* Places preloaded piece (cube) onto node and parks on a third of the charge station
 	*/
-    public OnePieceParkAuto(Drive drive, Arm arm, Claw claw, Shoulder shoulder, SendableChooser<Integer> side_chooser, boolean place, boolean park) {
+    public OnePieceParkAuto(DriveSubsystem drive, Arm arm, Claw claw, Shoulder shoulder, SendableChooser<Integer> side_chooser, boolean place, boolean park) {
         m_robotDrive = drive;
         m_arm = arm;
         m_claw = claw;
