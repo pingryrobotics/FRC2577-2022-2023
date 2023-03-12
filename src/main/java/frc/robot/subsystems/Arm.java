@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.SparkMaxPIDController;
 
 import frc.robot.Constants;
@@ -51,21 +52,24 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Arm Position (rotations)", armPos);
         SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
 
+        // armMotor.enableSoftLimit(SoftLimitDirection.kForward, armLimitEnabled);
+        // armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.MechanismConstants.kMaxArmRetraction);
+
         // stop from going too farn
         if (armLimitEnabled) {
             // extending decreases ticks
-            if (armPos >= Constants.MechanismConstants.kMaxArmRetraction) {
-                if (speed > 0) {
-                    armMotor.set(0);
-                    return;
-                }
-            } 
-            // else if (armPos <= Constants.MechanismConstants.kMaxArmExtension) {
-            //     if (speed < 0) {
+            // if (armPos >= Constants.MechanismConstants.kMaxArmRetraction) {
+            //     if (speed > 0) {
             //         armMotor.set(0);
             //         return;
             //     }
-            // }
+            // } 
+        //     // else if (armPos <= Constants.MechanismConstants.kMaxArmExtension) {
+        //     //     if (speed < 0) {
+        //     //         armMotor.set(0);
+        //     //         return;
+        //     //     }
+        //     // }
         }
 
         // run normally
