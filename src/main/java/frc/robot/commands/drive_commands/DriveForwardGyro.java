@@ -39,10 +39,10 @@ public class DriveForwardGyro extends CommandBase {
     public void execute() {
         if ((m_gyro.getGyroAngleY() > (initGyroPos + 10)) && !tilted) {
             // started the tilt
-            m_subsystem.drive(0.05, 0, 0, false, false);
+            m_subsystem.drive(0.07, 0, 0, false, false);
             tilted = true;
         } else if (tilted) {
-            if (m_gyro.getGyroAngleY() <= (3 + initGyroPos)) {
+            if (m_gyro.getGyroAngleY() <= (2 + initGyroPos)) {
                 straight = true;
             }
         }

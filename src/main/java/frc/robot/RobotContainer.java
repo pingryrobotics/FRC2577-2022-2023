@@ -115,9 +115,9 @@ public class RobotContainer {
             
             new RunCommand(
                 () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverJoystick.getY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverJoystick.getY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
                     -MathUtil.applyDeadband(m_driverJoystick.getX() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverJoystick.getTwist() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverJoystick.getTwist() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
                     false, true),
                     m_robotDrive));
             
@@ -130,6 +130,7 @@ public class RobotContainer {
         m_chooser.addOption("Move Forward Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, false));
         m_chooser.addOption("Place and Move Forward Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true));
         m_chooser.addOption("Auto Balance Auto", new AutoBalanceAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, false));
+        m_chooser.addOption("Place and Auto Balance Auto", new AutoBalanceAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true));
 
         
         // Put the chooser on the dashboard
@@ -164,6 +165,16 @@ public class RobotContainer {
          new JoystickButton(m_driverJoystick, 11).whileTrue(
             new RunCommand(() ->
             m_robotDrive.setX(), m_robotDrive));
+        
+        new JoystickButton(m_driverJoystick, 5).onTrue(
+            new RunCommand(() ->
+            m_robotDrive.forwardMode())
+        );
+
+        new JoystickButton(m_driverJoystick,3).onTrue(
+            new RunCommand(() ->
+            m_robotDrive.reverseMode())
+        );
 
         // new JoystickButton(m_driverJoystick, 2).whileTrue(
         //     new RunCommand(() ->
@@ -235,6 +246,14 @@ public class RobotContainer {
         m_operatorController.start().onTrue(new RunCommand(
             () -> m_arm.resetEncoder()
         ));
+
+        // m_operatorController.leftTrigger().onTrue(new RunCommand(
+        //     () -> m_arm.toggleLimit(false)
+        // ));
+
+        // m_operatorController.leftTrigger().onFalse(new RunCommand(
+        //     () -> m_arm.toggleLimit(true)
+        // ));
 
         // CLAW COMMANDS
         // toggle claw
@@ -309,6 +328,10 @@ public class RobotContainer {
         //         m_robotDrive));
             
       }
+
+    //   public void enableLimit() {
+    //         m_arm.enableLimit();
+    //   }
 
 
 

@@ -66,18 +66,17 @@ public class MoveForwardAuto extends SequentialCommandGroup {
          */
 
         if (place) {
-                    // addCommands(
-        //     new RunCommand(
-        //         () -> m_shoulder.
-        //     )
-        //     new WaitCommand(3.0),
-        //     new RunCommand(
-        //         () -> m_robotDrive.stop()
-        //     )
-        // );
+            addCommands(
+                new ShoulderPID(m_shoulder, Constants.MechanismConstants.kshoulderLowPosition).withTimeout(4),
+                // new ArmExtend(m_arm).withTimeout(1.5),
+                new WaitCommand(3),
+                new RunCommand(
+                    () -> m_claw.open()
+                ).withTimeout(3)
+            );
         }
         addCommands(
-            new DriveBackward(m_robotDrive).withTimeout(10),
+            new DriveBackward(m_robotDrive).withTimeout(5),
             // new WaitCommand(5.0),
             new RunCommand(
                 () -> m_robotDrive.drive(0, 0, 0, false, false)

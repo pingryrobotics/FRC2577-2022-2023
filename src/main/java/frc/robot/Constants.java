@@ -40,9 +40,11 @@ public final class Constants {
     public static final double kMinShoulderRotation = -100; // FINE TUNE VALUE
     // public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
 
-    public static final double kshoulderLowPosition = -10; // FINE TUNE VALUE
-    public static final double kshoulderMidPosition = -20; // FINE TUNE VALUE
-    public static final double kshoulderHighPosition = -50; // FINE TUNE VALUE
+    public static final double kshoulderLowPosition = -13; // FINE TUNE VALUE
+    public static final double kshoulderMidPosition = -53; // FINE TUNE VALUE
+    public static final double kshoulderHighPosition = -63; // FINE TUNE VALUE
+    public static final double kshoulderBackPosition = 50; // FINE TUNE VALUE
+
 
     public static final double kArmLowExtension = 0; // FINE TUNE VALUE
     public static final double kArmMidExtension = -20; // FINE TUNE VALUE
@@ -54,8 +56,8 @@ public final class Constants {
     public static final double kShoulderD = 0.0; // FINE TUNE VALUE
     public static final double kShoulderFF = 0.0; // FINE TUNE VALUE
     public static final int kShoulderIZone = 0; // FINE TUNE VALUE
-    public static final double kShoulderMinOutput = -0.2; // FINE TUNE VALUE
-    public static final double kShoulderMaxOutput = 0.2; // FINE TUNE VALUE
+    public static final double kShoulderMinOutput = -1; // FINE TUNE VALUE
+    public static final double kShoulderMaxOutput = 1; // FINE TUNE VALUE
 
     // PID values for arm
     public static final double kArmP = 0.1; // FINE TUNE VALUE

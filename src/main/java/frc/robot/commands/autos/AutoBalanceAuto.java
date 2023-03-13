@@ -68,15 +68,11 @@ public class AutoBalanceAuto extends SequentialCommandGroup {
          */
 
         if (place) {
-                    // addCommands(
-        //     new RunCommand(
-        //         () -> m_shoulder.
-        //     )
-        //     new WaitCommand(3.0),
-        //     new RunCommand(
-        //         () -> m_robotDrive.stop()
-        //     )
-        // );
+            addCommands(
+                new ShoulderPID(m_shoulder, 50).withTimeout(2),
+                new WaitCommand(1),
+                new ShoulderPID(m_shoulder, 0).withTimeout(1)
+            );
         }
         addCommands(
             new DriveForwardGyro(m_robotDrive).withTimeout(12),
@@ -84,7 +80,7 @@ public class AutoBalanceAuto extends SequentialCommandGroup {
             new RunCommand(
                 () -> m_robotDrive.drive(-0.04, 0, 0, false, false)
                 // () -> m_robotDrive.stop()
-            ).withTimeout(0.5),
+            ).withTimeout(1.2),
             new RunCommand(
                 () -> m_robotDrive.drive(0, 0, 0, false, false)
                 // () -> m_robotDrive.stop()

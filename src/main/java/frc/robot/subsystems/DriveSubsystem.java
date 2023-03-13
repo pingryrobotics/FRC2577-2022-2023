@@ -282,7 +282,11 @@ public class DriveSubsystem extends SubsystemBase {
   //   }
   // }
 
-  public void toggleReverseMode() {
-    m_reverseModeCoeff *= -1;
+  public void forwardMode() {
+    m_reverseModeCoeff = 1;
+  }
+
+  public void reverseMode() {
+    m_reverseModeCoeff = -1;
   }
 }

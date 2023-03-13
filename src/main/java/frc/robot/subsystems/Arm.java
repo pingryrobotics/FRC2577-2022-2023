@@ -51,6 +51,7 @@ public class Arm extends SubsystemBase {
 
         SmartDashboard.putNumber("Arm Position (rotations)", armPos);
         SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
+        SmartDashboard.putNumber("Arm speed", speed);
 
         // armMotor.enableSoftLimit(SoftLimitDirection.kForward, armLimitEnabled);
         // armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.MechanismConstants.kMaxArmRetraction);
@@ -120,4 +121,13 @@ public class Arm extends SubsystemBase {
         // desiredPosition = armMotor.getEncoder().getPosition();
         // positionMode = true;
     }
+
+    // public void enableLimit() {
+    //     armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    //     armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)armMotor.getEncoder().getPosition());
+    // }
+
+    // public void toggleLimit(boolean isOn) {
+    //     armMotor.enableSoftLimit(SoftLimitDirection.kForward, isOn);
+    // }
 }

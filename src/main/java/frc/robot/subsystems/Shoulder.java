@@ -48,14 +48,15 @@ public class Shoulder extends SubsystemBase {
 
         SmartDashboard.putNumber("Shoulder Position (rotations)", shoulderPos);
         SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
+        SmartDashboard.putNumber("Shoulder speed", speed);
         // This method will be called once per scheduler run
 
         // stop from going too far
-        if (shoulderPos < Constants.MechanismConstants.kMinShoulderRotation
-                || shoulderPos > Constants.MechanismConstants.kMaxShoulderRotation) {
-            shoulderMotor.set(0);
-            return;
-        }
+        // if (shoulderPos < Constants.MechanismConstants.kMinShoulderRotation
+        //         || shoulderPos > Constants.MechanismConstants.kMaxShoulderRotation) {
+        //     shoulderMotor.set(0);
+        //     return;
+        // }
 
         if (positionMode) {
             m_pid.setReference(desiredPosition, ControlType.kPosition);
@@ -76,7 +77,7 @@ public class Shoulder extends SubsystemBase {
     }
 
     public void setDesiredTicks(double desiredPosition) {
-        this.desiredPosition = desiredPosition/shoulderMotor.getEncoder().getCountsPerRevolution();
+        this.desiredPosition = desiredPosition;
         positionMode = true;
     }
 
