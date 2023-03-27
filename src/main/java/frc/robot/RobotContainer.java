@@ -75,7 +75,7 @@ public class RobotContainer {
 
 
     // The driver's controller
-    // CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
     Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
     // Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
@@ -109,15 +109,26 @@ public class RobotContainer {
         SmartDashboard.putData("Side", side_chooser);
         
                 // Configure default commands
+        // m_robotDrive.setDefaultCommand(
+        //     // The left stick controls translation of the robot.
+        //     // Turning is controlled by the X axis of the right stick.
+            
+        //     new RunCommand(
+        //         () -> m_robotDrive.drive(
+        //             -MathUtil.applyDeadband(m_driverJoystick.getY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //             -MathUtil.applyDeadband(m_driverJoystick.getX() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
+        //             -MathUtil.applyDeadband(m_driverJoystick.getTwist() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //             false, true),
+        //             m_robotDrive));
         m_robotDrive.setDefaultCommand(
             // The left stick controls translation of the robot.
             // Turning is controlled by the X axis of the right stick.
             
             new RunCommand(
                 () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverJoystick.getY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverJoystick.getX() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverJoystick.getTwist() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftX() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
                     false, true),
                     m_robotDrive));
             
