@@ -381,11 +381,17 @@ public class RobotContainer {
             m_claw.close();
         }
 
-        if (m_driverJoystick.getRawButtonPressed(2)) {
+        if (m_driverJoystick.getRawButtonPressed(2) || m_driverController.getHID().getLeftBumperPressed()) {
             m_robotDrive.slowModeOn();
-        } else if (m_driverJoystick.getRawButtonReleased(2)) {
+        } else if (m_driverJoystick.getRawButtonReleased(2) || m_driverController.getHID().getLeftBumperReleased()) {
             m_robotDrive.slowModeOff();
         }
+
+       if (m_driverController.getHID().getRightBumperPressed()) {
+            m_robotDrive.reverseMode();
+        } else if (m_driverController.getHID().getRightBumperReleased()) {
+            m_robotDrive.forwardMode();
+        } 
     }
 
     /**
