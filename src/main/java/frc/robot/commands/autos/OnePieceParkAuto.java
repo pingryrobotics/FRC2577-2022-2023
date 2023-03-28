@@ -1,6 +1,7 @@
 package frc.robot.commands.autos;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 // commented because i don't like seeing yellow dots on my sidebar - christian
@@ -75,15 +76,15 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
         double startXPos = Grids.outerX + Constants.DriveConstants.kWheelBase/2;
 
         // only waypoint: x is halfway between initial position and close edge of charging station, y is exactly in the center (will be edited)
-        List<Pose2d> waypoints;
+        List<Translation2d> waypoints;
         //  = List.of(new Translation2d((startXPos + Community.chargingStationInnerX)/2, Grids.nodeFirstY + 4 * Grids.nodeSeparationY));
 
-        Pose2d endPose = new Pose2d(((Community.chargingStationInnerX + Community.chargingStationOuterX)),
-        (Community.chargingStationLeftY + Community.chargingStationRightY)/2, new Rotation2d(0));
+        // Pose2d endPose = new Pose2d(((Community.chargingStationInnerX + Community.chargingStationOuterX)),
+        // (Community.chargingStationLeftY + Community.chargingStationRightY)/2, new Rotation2d(0));
 
-        startPose = new Pose2d(1.8, 4.4, new Rotation2d(0));
-        waypoints = List.of(new Pose2d(1.8, 4.4, Rotation2d.fromDegrees(90)));
-        endPose = new Pose2d(1.8, 4.4, Rotation2d.fromDegrees(90));
+        // startPose = new Pose2d(1.8, 4.4, new Rotation2d(0));
+        // waypoints = List.of(new Pose2d(1.8, 4.4));
+        // endPose = new Pose2d(1.8, 4.4, Rotation2d.fromDegrees(90));
 
         // each y position is a cube node, nodeFirstY is the first node, nodeSeparationY is the distance between nodeSeparationY
         // startXPos is the x position of the robot (i.e. right outside the grids )
@@ -151,7 +152,24 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
         //     // End 3 meters straight ahead of where we started, facing forward
         //     endPose,
         //     config);
-        String trajectoryJSON = "pathplanner/generatedJSON/Pickup.wpilib.json";
+        String trajectoryJSON;
+        switch (side_chooser.getSelected()) {
+            // case 0:
+            // case 1:
+            case 2:
+                trajectoryJSON = "pathplanner/generatedJSON/Pickup.wpilib.json";
+            // case 3:
+            // case 4:
+            // case 5:
+            default:
+                trajectoryJSON = "pathplanner/generatedJSON/DoNothing.wpilib.json";
+                List<Translation2d> emptyList = new ArrayList<>();
+                traj = TrajectoryGenerator.generateTrajectory(
+                new Pose2d(0, 0, new Rotation2d(0)),
+                emptyList,
+                new Pose2d(0, 0, new Rotation2d(0)),
+                config);
+        }
         try {
             traj = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON));
         } catch (IOException ie) {
