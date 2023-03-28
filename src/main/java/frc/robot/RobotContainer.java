@@ -51,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
@@ -71,7 +72,7 @@ public class RobotContainer {
     private final Arm m_arm = new Arm(new CANSparkMax(MechanismConstants.kArmID, MotorType.kBrushless));
     // private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     private final DoubleSolenoid m_DoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    private final Claw m_claw = new Claw(m_DoubleSolenoid, new ColorSensorV3(I2C.Port.kOnboard));
+    private final Claw m_claw = new Claw(m_DoubleSolenoid, new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard));
     private final Shoulder m_shoulder = new Shoulder(new CANSparkMax(MechanismConstants.kShoulderID, MotorType.kBrushless));
 
 

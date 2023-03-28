@@ -13,6 +13,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.Rev2mDistanceSensor;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -34,7 +35,7 @@ public class Claw extends SubsystemBase {
 	/**
 	 * Creates a new ExampleSubsystem.
 	 */
-	public Claw(DoubleSolenoid clawSolenoid, ColorSensorV3 colorSensor) {
+	public Claw(DoubleSolenoid clawSolenoid, Rev2mDistanceSensor colorSensor) {
 		this.clawSolenoid = clawSolenoid;
 		this.colorSensor = colorSensor;
 		// this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
