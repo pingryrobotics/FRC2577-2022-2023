@@ -70,6 +70,7 @@ public final class Constants {
 
     public static final int kArmID = 31;
     public static final int kShoulderID = 30;
+    public static final int kColorSensorID = 0;
     // public static final int kClawID = 0;
   }
 

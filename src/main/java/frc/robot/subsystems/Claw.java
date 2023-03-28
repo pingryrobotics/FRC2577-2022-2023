@@ -11,6 +11,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.revrobotics.ColorSensorV3;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -22,13 +25,18 @@ public class Claw extends SubsystemBase {
 	// private Solenoid singleSolenoid;
 	private boolean state = false;
 	private Compressor compressor;
+	private Rev2mDistanceSensor colorSensor;
+	private boolean autoClaw = true;
+	private boolean objectExists = false;
+	private boolean objectExisted = false;
 
     
 	/**
 	 * Creates a new ExampleSubsystem.
 	 */
-	public Claw(DoubleSolenoid clawSolenoid) {
+	public Claw(DoubleSolenoid clawSolenoid, ColorSensorV3 colorSensor) {
 		this.clawSolenoid = clawSolenoid;
+		this.colorSensor = colorSensor;
 		// this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
 		// this.singleSolenoid = solenoid;
 		// solenoid.set(true);
@@ -36,11 +44,26 @@ public class Claw extends SubsystemBase {
 		this.clawSolenoid.set(DoubleSolenoid.Value.kForward);
 		// compressor.disable();
 		// this.setDefaultCommand(new ClawStop(this));
+		colorSensor.setAutomaticMode(true);
 	}
 
 	@Override
 	public void periodic() {
+		if (colorSensor.isRangeValid() && colorSensor.getRange() < 40) {
+			objectExisted = objectExists;
+			objectExists = true;
+		} else {
+			objectExisted = objectExists;
+			objectExists = false;
+		}
 		// This method will be called once per scheduler run
+		if (autoClaw && !objectExisted && objectExists) {
+			this.close();
+		}
+	}
+
+	public void toggleAutoClaw() {
+		autoClaw = !autoClaw;
 	}
 
 	public void enableCompressor() {
