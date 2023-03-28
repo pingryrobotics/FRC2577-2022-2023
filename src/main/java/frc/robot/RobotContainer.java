@@ -237,13 +237,13 @@ public class RobotContainer {
          * speed dial lower half: slow mode for arm and shoulder
          */
 
-        //  m_operatorController.leftBumper().onTrue(new RunCommand(
-        //     () -> m_claw.enableCompressor()
-        // ));
+         new JoystickButton(m_driverJoystick, 7).onTrue(new RunCommand(
+            () -> m_claw.enableCompressor()
+        ));
 
-        // m_operatorController.rightBumper().onTrue(new RunCommand(
-        //     () -> m_claw.disableCompressor()
-        // ));
+        new JoystickButton(m_driverJoystick, 8).onTrue(new RunCommand(
+            () -> m_claw.disableCompressor()
+        ));
 
         // extend arm fully (level 3)
         m_operatorController.y().onTrue(new ArmToHigh(m_arm));
