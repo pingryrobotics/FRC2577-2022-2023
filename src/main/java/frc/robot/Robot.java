@@ -50,7 +50,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -63,6 +65,7 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.resetEncodersAndGyro();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_robotContainer.enableAutomaticDistance();
 
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -88,6 +91,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     m_robotContainer.resetEncodersAndGyro();
+    // m_robotContainer.enableAutomaticDistance();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

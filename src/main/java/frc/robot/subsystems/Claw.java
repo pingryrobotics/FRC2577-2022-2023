@@ -12,30 +12,38 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.Rev2mDistanceSensor;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.commands.claw_commands.ClawStop;
 
 public class Claw extends SubsystemBase {
     private DoubleSolenoid clawSolenoid;
 	// private Solenoid singleSolenoid;
+	private CANSparkMax wheelsMotor;
 	private boolean state = false;
 	private Compressor compressor;
-	private Rev2mDistanceSensor colorSensor;
-	private boolean autoClaw = true;
-	private boolean objectExists = false;
-	private boolean objectExisted = false;
+	private ColorSensorV3 colorSensor;
+	public boolean autoClaw = false;
+	public boolean objectExists = false;
+	public boolean objectExisted = false;
+	// private int cnt = 0;
+	public double wheelsSpeed = 0;
 
     
 	/**
 	 * Creates a new ExampleSubsystem.
 	 */
-	public Claw(DoubleSolenoid clawSolenoid, Rev2mDistanceSensor colorSensor) {
+	public Claw(CANSparkMax wheelsMotor, DoubleSolenoid clawSolenoid, ColorSensorV3 colorSensor) {
+		this.wheelsMotor = wheelsMotor;
 		this.clawSolenoid = clawSolenoid;
 		this.colorSensor = colorSensor;
 		// this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
@@ -45,22 +53,37 @@ public class Claw extends SubsystemBase {
 		this.clawSolenoid.set(DoubleSolenoid.Value.kForward);
 		// compressor.disable();
 		// this.setDefaultCommand(new ClawStop(this));
-		colorSensor.setAutomaticMode(true);
+		SmartDashboard.putBoolean("Has closed", false);
 	}
+
+	// public void enableAutomatic() {
+		// colorSensor.setAutomaticMode(true);
+	// }
 
 	@Override
 	public void periodic() {
-		if (colorSensor.isRangeValid() && colorSensor.getRange() < 40) {
+		SmartDashboard.putNumber("Color Sensor Range", colorSensor.getProximity());
+		// SmartDashboard.putNumber("Color Sensor Timestamp", colorSensor.getBlue());
+		SmartDashboard.putBoolean("AutoClaw (tm) On", autoClaw);
+		SmartDashboard.putBoolean("Claw Is Open", state);
+
+		if (colorSensor.getProximity() > 110) {
 			objectExisted = objectExists;
 			objectExists = true;
+			// this.close();
 		} else {
 			objectExisted = objectExists;
 			objectExists = false;
 		}
+
+		// SmartDashboard.putBoolean("Existed", objectExisted);
+		// SmartDashboard.putBoolean("Exists", objectExists);
+
 		// This method will be called once per scheduler run
-		if (autoClaw && !objectExisted && objectExists) {
-			this.close();
-		}
+	}
+
+	public void setWheelsSpeed(double speed) {
+		wheelsSpeed = speed;
 	}
 
 	public void toggleAutoClaw() {
@@ -98,8 +121,8 @@ public class Claw extends SubsystemBase {
 	}
 
 	// DoubleSolenoid.toggle() is unreliable since it handles toggling away from kOff badly
-	public void toggle() {
-		if(state) close();
-		else open();
-	}
+	// public void toggle() {
+	// 	if(state) close();
+	// 	else open();
+	// }
 }

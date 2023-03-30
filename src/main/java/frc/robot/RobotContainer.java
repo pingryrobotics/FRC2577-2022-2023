@@ -53,6 +53,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -72,14 +75,16 @@ public class RobotContainer {
     private final Arm m_arm = new Arm(new CANSparkMax(MechanismConstants.kArmID, MotorType.kBrushless));
     // private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     private final DoubleSolenoid m_DoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    private final Claw m_claw = new Claw(m_DoubleSolenoid, new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard));
+    private final Claw m_claw = new Claw(new CANSparkMax(MechanismConstants.kClawID, MotorType.kBrushless), m_DoubleSolenoid, new ColorSensorV3(I2C.Port.kOnboard));
+    // new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard));
+    // , Unit.kInches, RangeProfile.kHighAccuracy));
     private final Shoulder m_shoulder = new Shoulder(new CANSparkMax(MechanismConstants.kShoulderID, MotorType.kBrushless));
 
 
 
     // The driver's controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
-    Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
+    // Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
     // Joystick m_driverJoystick = new Joystick(OIConstants.kDriverJoystickPort);
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
@@ -130,8 +135,8 @@ public class RobotContainer {
             new RunCommand(
                 () -> m_robotDrive.drive(
                     -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getLeftX() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.8 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
                     false, true),
                     m_robotDrive));
             
@@ -175,20 +180,19 @@ public class RobotContainer {
         /*
         DRIVER CONTROLLER
         */
-
-         new JoystickButton(m_driverJoystick, 11).whileTrue(
+        m_driverController.x().onTrue(
             new RunCommand(() ->
             m_robotDrive.setX(), m_robotDrive));
         
-        new JoystickButton(m_driverJoystick, 5).onTrue(
-            new RunCommand(() ->
-            m_robotDrive.forwardMode())
-        );
+        // new JoystickButton(m_driverJoystick, 5).onTrue(
+        //     new RunCommand(() ->
+        //     m_robotDrive.forwardMode())
+        // );
 
-        new JoystickButton(m_driverJoystick,3).onTrue(
-            new RunCommand(() ->
-            m_robotDrive.reverseMode())
-        );
+        // new JoystickButton(m_driverJoystick,3).onTrue(
+        //     new RunCommand(() ->
+        //     m_robotDrive.reverseMode())
+        // );
 
         // new JoystickButton(m_driverJoystick, 2).whileTrue(
         //     new RunCommand(() ->
@@ -240,26 +244,27 @@ public class RobotContainer {
          * speed dial lower half: slow mode for arm and shoulder
          */
 
-         new JoystickButton(m_driverJoystick, 7).onTrue(new RunCommand(
-            () -> m_claw.enableCompressor()
-        ));
+        //  new JoystickButton(m_driverJoystick, 7).onTrue(new RunCommand(
+        //     () -> m_claw.enableCompressor()
+        // ));
 
-        new JoystickButton(m_driverJoystick, 8).onTrue(new RunCommand(
-            () -> m_claw.disableCompressor()
-        ));
+        // new JoystickButton(m_driverJoystick, 8).onTrue(new RunCommand(
+        //     () -> m_claw.disableCompressor()
+        // ));
 
-        m_operatorController.rightBumper().onTrue(new InstantCommand(
+        m_operatorController.leftTrigger().onTrue(new InstantCommand(
             () -> m_claw.toggleAutoClaw()
         ));
 
-        // extend arm fully (level 3)
-        m_operatorController.y().onTrue(new ArmToHigh(m_arm));
-        // extend arm to level 2 height
-        m_operatorController.x().onTrue(new ArmToMid(m_arm));
-        // extend arm to level 1 height
-        m_operatorController.b().onTrue(new ArmToLow(m_arm));
-        // retract arm fully
-        m_operatorController.a().onTrue(new ArmToIn(m_arm));
+        // // extend arm fully (level 3)
+        // m_operatorController.y().onTrue(new ArmToHigh(m_arm));
+        // // extend arm to level 2 height
+        // m_operatorController.x().onTrue(new ArmToMid(m_arm));
+        // // extend arm to level 1 height
+        // m_operatorController.b().onTrue(new ArmToLow(m_arm));
+        // // retract arm fully
+        // m_operatorController.a().onTrue(new ArmToIn(m_arm));
+
         // reset arm encoder
         m_operatorController.start().onTrue(new RunCommand(
             () -> m_arm.resetEncoder()
@@ -288,6 +293,19 @@ public class RobotContainer {
         // m_operatorController.rightBumper().onTrue(new RunCommand(
         //     () -> m_claw.close()
         // ));
+
+        // claw wheels out
+        m_operatorController.y().onTrue(new RunCommand(
+            () -> m_claw.setWheelsSpeed(1)
+        ));
+        // claw wheels off
+        m_operatorController.b().onTrue(new RunCommand(
+            () -> m_claw.setWheelsSpeed(0)
+        ));
+        // claw wheels in
+        m_operatorController.a().onTrue(new RunCommand(
+            () -> m_claw.setWheelsSpeed(-1)
+        ));
 
         m_operatorController.leftTrigger().onTrue(new RunCommand(() -> m_claw.stop()));
 
@@ -355,6 +373,11 @@ public class RobotContainer {
 
     public void containerPeriodic() {
 
+        if (m_claw.autoClaw && !m_claw.objectExisted && m_claw.objectExists) {
+			m_claw.close();
+			SmartDashboard.putBoolean("Has closed", true);
+		}
+
         // ARM COMMANDS
         // while held, extend/retract the arm
         if (Math.abs(m_operatorController.getRightY()) > 0.1) {
@@ -388,9 +411,9 @@ public class RobotContainer {
             m_claw.close();
         }
 
-        if (m_driverJoystick.getRawButtonPressed(2) || m_driverController.getHID().getLeftBumperPressed()) {
+        if (m_driverController.getHID().getLeftBumperPressed()) {
             m_robotDrive.slowModeOn();
-        } else if (m_driverJoystick.getRawButtonReleased(2) || m_driverController.getHID().getLeftBumperReleased()) {
+        } else if (m_driverController.getHID().getLeftBumperReleased()) {
             m_robotDrive.slowModeOff();
         }
 
@@ -409,4 +432,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return m_chooser.getSelected().withTimeout(14.5);
     }
+    
+    // public void enableAutomaticDistance() {
+    //     m_claw.enableAutomatic();
+    // }
 }

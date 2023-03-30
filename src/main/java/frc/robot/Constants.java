@@ -27,7 +27,7 @@ public final class Constants {
   public static final class MechanismConstants { // remove the "FINE TUNE VALUE" comments as you tweak them
     public static final double kArmSpeed = 1; // FINE TUNE VALUE
     public static final double kShoulderSpeed = 0.3; // FINE TUNE VALUE
-    public static final double kClawSpeed = 0.5; // FINE TUNE VALUE
+    public static final double kClawSpeed = 1; // FINE TUNE VALUE
     public static final double kSlowdownMultiplier = 0.5;
 
     public static final double kArmPositionTolerance = 10; // FINE TUNE VALUE
@@ -71,7 +71,7 @@ public final class Constants {
     public static final int kArmID = 31;
     public static final int kShoulderID = 30;
     public static final int kColorSensorID = 0;
-    // public static final int kClawID = 0;
+    public static final int kClawID = 32;
   }
 
   public static final class DriveConstants {
@@ -108,7 +108,7 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    public static final double kDriveSpeed = 1;
+    public static final double kDriveSpeed = 0.75;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 13;

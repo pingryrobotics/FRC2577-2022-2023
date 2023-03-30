@@ -157,18 +157,12 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
             // case 0:
             // case 1:
             case 2:
-                trajectoryJSON = "pathplanner/generatedJSON/Pickup.wpilib.json";
+                // trajectoryJSON = "pathplanner/generatedJSON/Pickup.wpilib.json";
             // case 3:
             // case 4:
             // case 5:
             default:
                 trajectoryJSON = "pathplanner/generatedJSON/DoNothing.wpilib.json";
-                List<Translation2d> emptyList = new ArrayList<>();
-                traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(0, 0, new Rotation2d(0)),
-                emptyList,
-                new Pose2d(0, 0, new Rotation2d(0)),
-                config);
         }
         try {
             traj = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON));
@@ -179,18 +173,18 @@ public class OnePieceParkAuto extends SequentialCommandGroup {
         SwerveControllerCommand toPark = TrajectoryCommandGenerator.generateCommand(traj, drive);
 
         if (place) {
-            addCommands(
-                new ShoulderToHigh(m_shoulder),
-                new WaitCommand(2.0),
-                new ArmToHigh(m_arm),
-                new WaitCommand(4.0),
-                new ClawToggle(m_claw),
-                new WaitCommand(2.0),
-                new ArmToLow(m_arm),
-                new WaitCommand(3.0),
-                new ShoulderToLow(m_shoulder),
-                new WaitCommand(1.0)
-            );
+            // addCommands(
+            //     new ShoulderToHigh(m_shoulder),
+            //     new WaitCommand(2.0),
+            //     new ArmToHigh(m_arm),
+            //     new WaitCommand(4.0),
+            //     // new ClawToggle(m_claw),
+            //     new WaitCommand(2.0),
+            //     new ArmToLow(m_arm),
+            //     new WaitCommand(3.0),
+            //     new ShoulderToLow(m_shoulder),
+            //     new WaitCommand(1.0)
+            // );
         }
         if (park) {
             addCommands(
