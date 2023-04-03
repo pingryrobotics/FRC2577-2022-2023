@@ -1,34 +1,37 @@
-package frc.robot.commands.drive_commands; //CTV
+package frc.robot.commands.claw_commands; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem; //CTV
+import frc.robot.subsystems.Claw; //CTV
 
 /** An example command that uses an example subsystem. */
-public class DriveBackward extends CommandBase {
+public class ClawWheels extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final DriveSubsystem m_subsystem;
+    private final Claw m_claw;
+    private final double power;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public DriveBackward(DriveSubsystem subsystem) {
-        m_subsystem = subsystem;
+    public ClawWheels(Claw claw, double power) {
+        this.power = power;
+        m_claw = claw;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
+        addRequirements(claw);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.drive(-0.2, 0, 0, false, false);
+        m_claw.setWheelsSpeed(power);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {}
+    public void execute() {
+        m_claw.setWheelsSpeed(power);
+    }
 
     // Called once the command ends or is interrupted.
     @Override
@@ -37,6 +40,6 @@ public class DriveBackward extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

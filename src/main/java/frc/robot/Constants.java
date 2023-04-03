@@ -40,7 +40,7 @@ public final class Constants {
     public static final double kMinShoulderRotation = -100; // FINE TUNE VALUE
     // public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
 
-    public static final double kshoulderLowPosition = -13; // FINE TUNE VALUE
+    public static final double kshoulderLowPosition = -17; // FINE TUNE VALUE
     public static final double kshoulderMidPosition = -53; // FINE TUNE VALUE
     public static final double kshoulderHighPosition = -63; // FINE TUNE VALUE
     public static final double kshoulderBackPosition = 50; // FINE TUNE VALUE
@@ -56,8 +56,8 @@ public final class Constants {
     public static final double kShoulderD = 0.0; // FINE TUNE VALUE
     public static final double kShoulderFF = 0.0; // FINE TUNE VALUE
     public static final int kShoulderIZone = 0; // FINE TUNE VALUE
-    public static final double kShoulderMinOutput = -1; // FINE TUNE VALUE
-    public static final double kShoulderMaxOutput = 1; // FINE TUNE VALUE
+    public static final double kShoulderMinOutput = -0.6; // FINE TUNE VALUE
+    public static final double kShoulderMaxOutput = 0.6; // FINE TUNE VALUE
 
     // PID values for arm
     public static final double kArmP = 0.1; // FINE TUNE VALUE
@@ -108,7 +108,7 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    public static final double kDriveSpeed = 0.75;
+    public static final double kDriveSpeed = 0.6;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 13;
@@ -197,9 +197,9 @@ public final class Constants {
   }
 
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 2;
+    public static final int kDriverControllerPort = 1;
     public static final int kOperatorControllerPort = 0;
-    public static final int kDriverJoystickPort = 1;
+    public static final int kDriverJoystickPort = 2;
     public static final double kDriveDeadband = 0.05;
   }
 
