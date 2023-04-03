@@ -37,6 +37,7 @@ import frc.robot.commands.autos.AutoBalanceAuto;
 import frc.robot.commands.autos.DoNothingAuto;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceParkAuto;
+import frc.robot.commands.autos.PlaceParkAuto;
 import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
 import frc.robot.commands.drive_commands.DriveX;
@@ -149,6 +150,10 @@ public class RobotContainer {
         
         // // Add commands to Autonomous Sendable Chooser
         m_chooser.setDefaultOption("Do Nothing", new DoNothingAuto());
+        m_chooser.addOption("New Place Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, false));
+        m_chooser.addOption("New Place Park Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, true));
+        m_chooser.addOption("New Place Balance Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, true, false));
+
         m_chooser.addOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, true));
         m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, false));
         m_chooser.addOption("Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, false, true));
