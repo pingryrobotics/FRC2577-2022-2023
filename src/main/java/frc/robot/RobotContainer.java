@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 //import edu.wpi.first.math.controller.PIDController;
 //import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,6 +39,7 @@ import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceParkAuto;
 import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
+import frc.robot.commands.drive_commands.DriveX;
 // import frc.robot.commands.drive_commands.*;
 import frc.robot.commands.shoulder_commands.*;
 import frc.robot.subsystems.Arm;
@@ -75,7 +77,8 @@ public class RobotContainer {
     private final Arm m_arm = new Arm(new CANSparkMax(MechanismConstants.kArmID, MotorType.kBrushless));
     // private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     private final DoubleSolenoid m_DoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    private final Claw m_claw = new Claw(new CANSparkMax(MechanismConstants.kClawID, MotorType.kBrushless), m_DoubleSolenoid, new ColorSensorV3(I2C.Port.kOnboard));
+    private final Claw m_claw = new Claw(new CANSparkMax(MechanismConstants.kClawID, MotorType.kBrushless), m_DoubleSolenoid);
+    // private final Claw m_claw = new Claw(m_DoubleSolenoid, new ColorSensorV3(I2C.Port.kOnboard));
     // new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard));
     // , Unit.kInches, RangeProfile.kHighAccuracy));
     private final Shoulder m_shoulder = new Shoulder(new CANSparkMax(MechanismConstants.kShoulderID, MotorType.kBrushless));
@@ -103,7 +106,10 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        CameraServer.startAutomaticCapture();
+        UsbCamera camera = CameraServer.startAutomaticCapture();
+        camera.setFPS(30);
+        camera.setResolution(256, 144);
+        // CameraServer.
         
         // CameraServer.
 
@@ -134,9 +140,9 @@ public class RobotContainer {
             
             new RunCommand(
                 () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.8 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1), OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
                     false, true),
                     m_robotDrive));
             
@@ -146,8 +152,9 @@ public class RobotContainer {
         m_chooser.addOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, true));
         m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, false));
         m_chooser.addOption("Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, false, true));
-        m_chooser.addOption("Move Forward Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, false));
-        m_chooser.addOption("Place and Move Forward Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true));
+        m_chooser.addOption("Move Forward Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, false, true));
+        m_chooser.addOption("Place and Move Forward Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, true));
+        m_chooser.addOption("Place Auto", new MoveForwardAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false));
         m_chooser.addOption("Auto Balance Auto", new AutoBalanceAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, false));
         m_chooser.addOption("Place and Auto Balance Auto", new AutoBalanceAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true));
 
@@ -181,8 +188,30 @@ public class RobotContainer {
         DRIVER CONTROLLER
         */
         m_driverController.x().onTrue(
-            new RunCommand(() ->
-            m_robotDrive.setX(), m_robotDrive));
+            new DriveX(m_robotDrive));
+            m_driverController.x().onFalse(
+                new RunCommand(() -> 
+                m_robotDrive.isX = false));
+            //         () -> m_robotDrive.drive(
+            //             -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+            //             -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+            //             -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
+            //             false, true),
+            //             m_robotDrive));
+            
+        m_driverController.y().onTrue(
+            new RunCommand(() -> m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                
+                new RunCommand(
+                    () -> m_robotDrive.drive(
+                        -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
+                        false, true),
+                        m_robotDrive)))
+        );
         
         // new JoystickButton(m_driverJoystick, 5).onTrue(
         //     new RunCommand(() ->
@@ -252,18 +281,22 @@ public class RobotContainer {
         //     () -> m_claw.disableCompressor()
         // ));
 
-        m_operatorController.leftTrigger().onTrue(new InstantCommand(
-            () -> m_claw.toggleAutoClaw()
-        ));
+        // m_operatorController.leftTrigger().onTrue(new InstantCommand(
+        //     () -> m_claw.toggleAutoClaw()
+        // ));
 
-        // // extend arm fully (level 3)
-        // m_operatorController.y().onTrue(new ArmToHigh(m_arm));
-        // // extend arm to level 2 height
-        // m_operatorController.x().onTrue(new ArmToMid(m_arm));
-        // // extend arm to level 1 height
-        // m_operatorController.b().onTrue(new ArmToLow(m_arm));
-        // // retract arm fully
-        // m_operatorController.a().onTrue(new ArmToIn(m_arm));
+        // extend arm fully (level 3)
+        m_operatorController.y().onTrue(new ArmToHigh(m_arm));
+        // extend arm to level 2 height
+        m_operatorController.b().onTrue(new ArmToMid(m_arm));
+        // extend arm to level 1 height
+        m_operatorController.x().onTrue(new ArmToLow(m_arm));
+        // retract arm fully
+        m_operatorController.a().onTrue(new ArmToIn(m_arm));
+
+        // m_operatorController.x().onTrue(new RunCommand(
+        //     () -> m_claw.reinitializeSensor()
+        // ));
 
         // reset arm encoder
         m_operatorController.start().onTrue(new RunCommand(
@@ -294,18 +327,18 @@ public class RobotContainer {
         //     () -> m_claw.close()
         // ));
 
-        // claw wheels out
-        m_operatorController.y().onTrue(new RunCommand(
-            () -> m_claw.setWheelsSpeed(1)
-        ));
-        // claw wheels off
-        m_operatorController.b().onTrue(new RunCommand(
-            () -> m_claw.setWheelsSpeed(0)
-        ));
+        // // claw wheels out
+        // m_operatorController.y().onTrue(new RunCommand(
+        //     () -> m_claw.setWheelsSpeed(1)
+        // ));
+        // // claw wheels off
+        // m_operatorController.b().onTrue(new RunCommand(
+        //     () -> m_claw.setWheelsSpeed(0)
+        // ));
         // claw wheels in
-        m_operatorController.a().onTrue(new RunCommand(
-            () -> m_claw.setWheelsSpeed(-1)
-        ));
+        // m_operatorController.a().whileTrue(new RunCommand(
+        //     () -> m_claw.setWheelsSpeed(-1)
+        // ));
 
         m_operatorController.leftTrigger().onTrue(new RunCommand(() -> m_claw.stop()));
 
@@ -322,9 +355,9 @@ public class RobotContainer {
         // reset shoulder encoder
         m_operatorController.back().onTrue(new ShoulderEncoderReset(m_shoulder));
 
-        m_operatorController.rightTrigger().onTrue(new RunCommand(
-            () -> m_arm.toggleArmLimit()
-        ));
+        // m_operatorController.rightTrigger().onTrue(new RunCommand(
+        //     () -> m_arm.toggleArmLimit()
+        // ));
 
         SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
         SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
@@ -372,6 +405,11 @@ public class RobotContainer {
 
 
     public void containerPeriodic() {
+        
+        // if (autoclaw && System.nanoTime())
+        // if (m_claw.isConnected) {
+        //     m_claw.prox = m_claw.colorSensor.getProximity();
+        // }
 
         if (m_claw.autoClaw && !m_claw.objectExisted && m_claw.objectExists) {
 			m_claw.close();
@@ -405,23 +443,38 @@ public class RobotContainer {
             leftJoystickPressed = false;
         }
 
+        // if (m_driverController.getHID().getXButton()) {
+        //     m_robotDrive.setX();
+        // }
+
         if (m_operatorController.getHID().getLeftBumperPressed()) {
             m_claw.open();
         } else if (m_operatorController.getHID().getRightBumperPressed()) {
             m_claw.close();
         }
 
-        if (m_driverController.getHID().getLeftBumperPressed()) {
+        if (m_operatorController.getHID().getRightTriggerAxis() > 0.1) {
+            m_claw.setWheelsSpeed(-0.3);
+            m_claw.autoClawOn();
+        } else if (m_operatorController.getHID().getLeftTriggerAxis() > 0.1) {
+            m_claw.setWheelsSpeed(1);
+        } else {
+            m_claw.setWheelsSpeed(0);
+            m_claw.autoClawOff();
+        }
+
+        if (m_driverController.getHID().getLeftBumper()) {
             m_robotDrive.slowModeOn();
         } else if (m_driverController.getHID().getLeftBumperReleased()) {
             m_robotDrive.slowModeOff();
         }
 
-       if (m_driverController.getHID().getRightBumperPressed()) {
+       if (m_driverController.getHID().getRightBumper()) {
             m_robotDrive.reverseMode();
         } else if (m_driverController.getHID().getRightBumperReleased()) {
             m_robotDrive.forwardMode();
         } 
+
     }
 
     /**

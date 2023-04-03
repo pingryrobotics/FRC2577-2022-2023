@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 //import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 //import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -27,7 +28,7 @@ import frc.robot.FieldConstants.Grids;
 import frc.robot.commands.shoulder_commands.*;
 import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
-import frc.robot.commands.drive_commands.DriveBackward;
+import frc.robot.commands.drive_commands.DriveForward;
 import frc.robot.commands.drive_commands.DriveForwardGyro;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -69,9 +70,13 @@ public class AutoBalanceAuto extends SequentialCommandGroup {
 
         if (place) {
             addCommands(
-                new ShoulderPID(m_shoulder, 50).withTimeout(2),
-                new WaitCommand(1),
-                new ShoulderPID(m_shoulder, 0).withTimeout(1)
+                new ShoulderPID(m_shoulder, 80).withTimeout(2),
+                new WaitCommand(2),
+                new InstantCommand(
+                    () -> m_claw.setWheelsSpeed(1)
+                ).withTimeout(1),
+                new WaitCommand(1)
+                // new ShoulderPID(m_shoulder, 0).withTimeout(1)
             );
         }
         addCommands(
@@ -80,7 +85,7 @@ public class AutoBalanceAuto extends SequentialCommandGroup {
             new RunCommand(
                 () -> m_robotDrive.drive(-0.04, 0, 0, false, false)
                 // () -> m_robotDrive.stop()
-            ).withTimeout(1.2),
+            ).withTimeout(2),
             new RunCommand(
                 () -> m_robotDrive.drive(0, 0, 0, false, false)
                 // () -> m_robotDrive.stop()

@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.ColorSensorV3.ProximitySensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ProximitySensorResolution;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Compressor;
@@ -24,6 +28,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.commands.claw_commands.ClawStop;
+import edu.wpi.first.wpilibj.I2C;
 
 public class Claw extends SubsystemBase {
     private DoubleSolenoid clawSolenoid;
@@ -31,21 +36,27 @@ public class Claw extends SubsystemBase {
 	private CANSparkMax wheelsMotor;
 	private boolean state = false;
 	private Compressor compressor;
-	private ColorSensorV3 colorSensor;
+	public ColorSensorV3 colorSensor;
 	public boolean autoClaw = false;
 	public boolean objectExists = false;
 	public boolean objectExisted = false;
 	// private int cnt = 0;
-	public double wheelsSpeed = 0;
+	public double speed = 0;
+	public int disconnectedCount = 0;
+	public double prox = -1;
+	public boolean isConnected = true;
 
     
 	/**
 	 * Creates a new ExampleSubsystem.
 	 */
-	public Claw(CANSparkMax wheelsMotor, DoubleSolenoid clawSolenoid, ColorSensorV3 colorSensor) {
+	public Claw(CANSparkMax wheelsMotor, DoubleSolenoid clawSolenoid) {
 		this.wheelsMotor = wheelsMotor;
+		// wheelsMotor.setVoltage(6);
 		this.clawSolenoid = clawSolenoid;
-		this.colorSensor = colorSensor;
+		this.colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+		colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes11bit, ProximitySensorMeasurementRate.kProxRate400ms);
+		// distanceSensor.setAutomaticMode(true);
 		// this.clawSolenoid.set(DoubleSolenoid.Value.kOff);
 		// this.singleSolenoid = solenoid;
 		// solenoid.set(true);
@@ -57,39 +68,107 @@ public class Claw extends SubsystemBase {
 	}
 
 	// public void enableAutomatic() {
-		// colorSensor.setAutomaticMode(true);
+	// 	colorSensor.setAutomaticMode(true);
 	// }
 
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber("Color Sensor Range", colorSensor.getProximity());
-		// SmartDashboard.putNumber("Color Sensor Timestamp", colorSensor.getBlue());
 		SmartDashboard.putBoolean("AutoClaw (tm) On", autoClaw);
 		SmartDashboard.putBoolean("Claw Is Open", state);
+		SmartDashboard.putBoolean("CS Active", colorSensor.isConnected());
+		SmartDashboard.putBoolean("CS Connected", isConnected);
 
-		if (colorSensor.getProximity() > 110) {
-			objectExisted = objectExists;
-			objectExists = true;
-			// this.close();
-		} else {
-			objectExisted = objectExists;
-			objectExists = false;
+		wheelsMotorActivate();
+
+		if(isConnected && !colorSensor.isConnected()){
+			isConnected = false;
+			prox = colorSensor.getProximity();
+			colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+			colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes11bit, ProximitySensorMeasurementRate.kProxRate400ms);
+
 		}
 
+		// if(!isConnected && colorSensor.isConnected()) {
+		// 	colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+		// 	colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes11bit, ProximitySensorMeasurementRate.kProxRate400ms);
+		// 	isConnected = true;
+		// }
+
+		if (isConnected) {
+			prox = colorSensor.getProximity();
+			if(colorSensor.getProximity() == 0) {
+				colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+				colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes11bit, ProximitySensorMeasurementRate.kProxRate400ms);
+				isConnected = true;
+
+			}
+
+		// distanceSensor =  new ColorSensorV3(ColorSensorV3.Port.kOnboard, Unit.kInches, RangeProfile.kHighSpeed);
+		// SmartDashboard.putNumber("Color Sensor Timestamp", colorSensor.getBlue());
+		
+		
+
+		// if (!colorSensor.isConnected() && (disconnectedCount < 5 || disconnectedCount % 500 == 0)) {
+		// 	colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+		// 	disconnectedCount += 1;
+		// } else {
+		// 	disconnectedCount = 0;
+		// }
+		
+		
+		// double prox = colorSensor.getProximity();
+		// if (prox == 0 && colorSensor.getBlue() == 0 && colorSensor.getRed() == 0) {
+			// colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+			// colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes9bit, ProximitySensorMeasurementRate.kProxRate100ms);
+		// }
+		SmartDashboard.putNumber("Distance Sensor Range", prox);
+		// SmartDashboard.putNumber("blue", colorSensor.getBlue());
+
+		// if (System.nanoTime() % 10 == 0) {
+			if (autoClaw && colorSensor.isConnected()) {
+
+			 	if (prox != -1 && prox > 180) {
+				objectExisted = objectExists;
+				objectExists = true;
+				// this.close();
+				}
+			} else {
+				objectExisted = objectExists;
+				objectExists = false;
+			}
+		// }
+		}
 		// SmartDashboard.putBoolean("Existed", objectExisted);
 		// SmartDashboard.putBoolean("Exists", objectExists);
 
 		// This method will be called once per scheduler run
 	}
 
+	public void wheelsMotorActivate() {
+		wheelsMotor.set(speed);
+	}
+
 	public void setWheelsSpeed(double speed) {
-		wheelsSpeed = speed;
+		this.speed = speed;
 	}
 
 	public void toggleAutoClaw() {
 		autoClaw = !autoClaw;
 	}
 
+	public void autoClawOn() {
+		autoClaw = true;
+	}
+
+	public void autoClawOff() {
+		autoClaw = false;
+	}
+
+	public void reinitializeSensor() {
+		colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+		colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes11bit, ProximitySensorMeasurementRate.kProxRate400ms);
+		isConnected = true;
+	}
 	public void enableCompressor() {
 		compressor.enableDigital();
 	}
