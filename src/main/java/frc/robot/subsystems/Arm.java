@@ -50,7 +50,7 @@ public class Arm extends SubsystemBase {
 		double armPos = armMotor.getEncoder().getPosition();
 
         SmartDashboard.putNumber("Arm Position (rotations)", armPos);
-        SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
+        SmartDashboard.putNumber("Desired Arm Rotation (rotations)", desiredPosition);
         SmartDashboard.putNumber("Arm speed", speed);
 
         // armMotor.enableSoftLimit(SoftLimitDirection.kForward, armLimitEnabled);

@@ -34,35 +34,35 @@ public final class Constants {
     public static final double kClawPositionTolerance = 10; // FINE TUNE VALUE
     public static final double kShoulderPositionTolerance = 10; // FINE TUNE VALUE
 
-    public static final double kMaxArmExtension = -100; // FINE TUNE VALUE
-    public static final double kMaxArmRetraction = 0.1; // FINE TUNE VALUE
-    public static final double kMaxShoulderRotation = 400; // FINE TUNE VALUE
-    public static final double kMinShoulderRotation = -100; // FINE TUNE VALUE
+    // public static final double kMaxArmExtension = -100; // FINE TUNE VALUE
+    // public static final double kMaxArmRetraction = 0.1; // FINE TUNE VALUE
+    // public static final double kMaxShoulderRotation = 400; // FINE TUNE VALUE
+    // public static final double kMinShoulderRotation = -100; // FINE TUNE VALUE
     // public static final double kClawClosedPosition = 0; // FINE TUNE VALUE
 
-    public static final double kshoulderLowPosition = -17; // FINE TUNE VALUE
+    public static final double kshoulderLowPosition = -11; // FINE TUNE VALUE
     public static final double kshoulderMidPosition = -53; // FINE TUNE VALUE
-    public static final double kshoulderHighPosition = -63; // FINE TUNE VALUE
+    public static final double kshoulderHighPosition = -68; // FINE TUNE VALUE
     public static final double kshoulderBackPosition = 50; // FINE TUNE VALUE
 
 
     public static final double kArmLowExtension = 0; // FINE TUNE VALUE
     public static final double kArmMidExtension = -20; // FINE TUNE VALUE
-    public static final double kArmHighExtension = -40; // FINE TUNE VALUE
+    public static final double kArmFullExtension = -75; // FINE TUNE VALUE
     
     // PID values for shoulder
-    public static final double kShoulderP = 0.1; // FINE TUNE VALUE
+    public static final double kShoulderP = 1; // FINE TUNE VALUE
     public static final double kShoulderI = 0.0; // FINE TUNE VALUE
-    public static final double kShoulderD = 0.0; // FINE TUNE VALUE
+    public static final double kShoulderD = 2; // FINE TUNE VALUE
     public static final double kShoulderFF = 0.0; // FINE TUNE VALUE
     public static final int kShoulderIZone = 0; // FINE TUNE VALUE
-    public static final double kShoulderMinOutput = -0.6; // FINE TUNE VALUE
-    public static final double kShoulderMaxOutput = 0.6; // FINE TUNE VALUE
+    public static final double kShoulderMinOutput = -0.8; // FINE TUNE VALUE
+    public static final double kShoulderMaxOutput = 1; // FINE TUNE VALUE
 
     // PID values for arm
     public static final double kArmP = 0.1; // FINE TUNE VALUE
     public static final double kArmI = 0.0; // FINE TUNE VALUE
-    public static final double kArmD = 0.0; // FINE TUNE VALUE
+    public static final double kArmD = 2; // FINE TUNE VALUE
     public static final double kArmFF = 0.0; // FINE TUNE VALUE
     public static final int kArmIZone = 0; // FINE TUNE VALUE
     public static final double kArmMinOutput = -1.0; // FINE TUNE VALUE
@@ -107,8 +107,6 @@ public final class Constants {
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
-
-    public static final double kDriveSpeed = 0.6;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 13;
@@ -192,7 +190,7 @@ public final class Constants {
     public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-    public static final int kDrivingMotorCurrentLimit = 50; // amps
+    public static final int kDrivingMotorCurrentLimit = 40; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 

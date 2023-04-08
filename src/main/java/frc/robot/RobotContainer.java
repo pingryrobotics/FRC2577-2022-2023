@@ -41,6 +41,7 @@ import frc.robot.commands.autos.PlaceParkAuto;
 import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
 import frc.robot.commands.drive_commands.DriveX;
+import frc.robot.commands.grouped_commands.SequentialCommands;
 // import frc.robot.commands.drive_commands.*;
 import frc.robot.commands.shoulder_commands.*;
 import frc.robot.subsystems.Arm;
@@ -99,6 +100,7 @@ public class RobotContainer {
     private boolean leftJoystickPressed = false;
     private boolean rightJoystickPressed = false;
     private boolean driveOn = false;
+    private boolean wheelsWereOn = false;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -135,17 +137,24 @@ public class RobotContainer {
         //             -MathUtil.applyDeadband(m_driverJoystick.getTwist() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.3 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
         //             false, true),
         //             m_robotDrive));
-        m_robotDrive.setDefaultCommand(
-            // The left stick controls translation of the robot.
-            // Turning is controlled by the X axis of the right stick.
+        // m_robotDrive.setDefaultCommand(
+        //     // The left stick controls translation of the robot.
+        //     // Turning is controlled by the X axis of the right stick.
             
-            new RunCommand(
-                () -> m_robotDrive.drive(
-                    -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
-                    false, true),
-                    m_robotDrive));
+        //     // new RunCommand(
+        //     //     () -> m_robotDrive.drive(
+        //     //         -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //     //         -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //     //         -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
+        //     //         false, true),
+        //     //         m_robotDrive));
+        //     new RunCommand(
+        //             () -> m_robotDrive.drive(
+        //                 -MathUtil.applyDeadband(m_driverController.getLeftY() * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //                 -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //                 -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
+        //                 true, false),
+        //                 m_robotDrive));
             
         
         // // Add commands to Autonomous Sendable Chooser
@@ -174,9 +183,15 @@ public class RobotContainer {
         m_robotDrive.zeroHeading();
     }
 
+    public void resetGyro() {
+        m_robotDrive.zeroHeading();
+    }
+
     public void calibrateGyro() {
         m_robotDrive.m_gyro.calibrate();
     }
+
+    
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
@@ -192,31 +207,189 @@ public class RobotContainer {
         /*
         DRIVER CONTROLLER
         */
-        m_driverController.x().onTrue(
-            new DriveX(m_robotDrive));
-            m_driverController.x().onFalse(
-                new RunCommand(() -> 
-                m_robotDrive.isX = false));
-            //         () -> m_robotDrive.drive(
+        // m_driverController.x().onTrue(
+        //     new DriveX(m_robotDrive, true));
+        //     m_driverController.x().onFalse(
+        //         new DriveX(m_robotDrive, false));
+          
+        m_operatorController.a().onTrue(SequentialCommands.fullyRetract(m_robotDrive, m_claw, m_shoulder, m_arm));
+        m_operatorController.y().onTrue(SequentialCommands.fullyExtend(m_robotDrive, m_claw, m_shoulder, m_arm));
+        m_operatorController.x().onTrue(new ArmPID(m_arm, 0));
+        m_operatorController.b().onTrue(new ArmPID(m_arm, Constants.MechanismConstants.kArmFullExtension));
+        
+
+        // SHOULDER COMMANDS
+
+        // move shoulder to level 3
+        m_operatorController.pov(0).onTrue(new ShoulderToHigh(m_shoulder));
+        // move shoulder to level 2
+        m_operatorController.pov(90).onTrue(new ShoulderToMid(m_shoulder));
+        // move shoulder to level 1
+        m_operatorController.pov(270).onTrue(new ShoulderToLow(m_shoulder));
+        // extend shoulder to vertical down
+        m_operatorController.pov(180).onTrue(new ShoulderToIn(m_shoulder));
+        // reset shoulder encoder
+        m_operatorController.back().onTrue(new ShoulderEncoderReset(m_shoulder));
+        
+        // m_operatorController.rightTrigger().onTrue(new RunCommand(
+        //     () -> m_arm.toggleArmLimit()
+        // ));
+
+        SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
+        SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
+    }
+
+   
+
+
+
+
+    public void containerPeriodic() {
+
+
+        if (m_driverController.getHID().getXButtonPressed()) {
+            m_robotDrive.setX();
+        } else if (!m_driverController.getHID().getXButton()) {
+            m_robotDrive.drive(
+                        -MathUtil.applyDeadband(m_driverController.getLeftY() * (m_robotDrive.m_slowMode ? 0.4 : 1) * (m_robotDrive.m_ultraSlowMode ? 0.5 : 1), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * (m_robotDrive.m_slowMode ? 0.4 : 1) * (m_robotDrive.m_ultraSlowMode ? 0.5 : 1), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * (m_robotDrive.m_slowMode ? 0.6 : 1) * (m_robotDrive.m_ultraSlowMode ? 0.5 : 1), OIConstants.kDriveDeadband),
+                        true, false);
+        }
+    
+        if (m_claw.autoClaw && !m_claw.objectExisted && m_claw.objectExists) {
+			m_claw.close();
+			SmartDashboard.putBoolean("Has closed", true);
+		}
+
+        if (m_driverController.getHID().getStartButtonPressed()) {
+            resetGyro();
+        }
+
+        // ARM COMMANDS
+        // while held, extend/retract the arm
+        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
+            m_arm.setArmSpeed(m_operatorController.getRightY());
+            rightJoystickPressed = true;
+        } else {
+            // joystick was just pressed -- means we're transitioning from arm extension to stop
+            if (rightJoystickPressed) {
+                m_arm.setArmSpeed(0);
+                // m_arm.stop();
+            }
+            rightJoystickPressed = false;
+        }
+
+        // while held, extend/retract the shoulder
+        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
+            m_shoulder.setShoulderSpeed(m_operatorController.getLeftY() * MechanismConstants.kShoulderSpeed);
+            leftJoystickPressed = true;
+        } else {
+            // joystick was just pressed -- means we're transitioning from shoulder extension to stop
+            if (leftJoystickPressed) {
+                m_shoulder.setShoulderSpeed(0);
+                // m_shoulder.stop();
+            }
+            leftJoystickPressed = false;
+        }
+
+        if (m_operatorController.getHID().getLeftStickButtonPressed()) {
+            m_claw.disableShutoff();
+        }
+
+        if (m_operatorController.getHID().getRightStickButtonPressed()) {
+            m_claw.enableShutoff();
+        }
+
+        
+        // if (m_driverController.getHID().getXButton()) {
+        //     m_robotDrive.setX();
+        // }
+
+        if (m_operatorController.getHID().getLeftBumperPressed()) {
+            m_claw.open();
+        } else if (m_operatorController.getHID().getRightBumperPressed()) {
+            m_claw.close();
+        }
+
+        if (m_operatorController.getHID().getRightTriggerAxis() > 0.1) {
+            m_claw.setWheelsSpeed(-0.3);
+            m_claw.autoClawOn();
+            wheelsWereOn = true;
+        } else if (m_operatorController.getHID().getLeftTriggerAxis() > 0.1) {
+            m_claw.setWheelsSpeed(0.5);
+            wheelsWereOn = true;
+        } else if (wheelsWereOn) {
+            m_claw.setWheelsSpeed(0);
+            m_claw.autoClawOff();
+            wheelsWereOn = false;
+        }
+
+        if(m_operatorController.getHID().getStartButtonPressed()) {
+            m_arm.resetEncoder();
+        }
+
+        if (m_driverController.getHID().getLeftBumper()) {
+            m_robotDrive.slowModeOn();
+        } else if (m_driverController.getHID().getLeftBumperReleased()) {
+            m_robotDrive.slowModeOff();
+        }
+
+       if (m_driverController.getHID().getRightBumper()) {
+            m_robotDrive.ultraSlowModeOn();
+        } else if (m_driverController.getHID().getRightBumperReleased()) {
+            m_robotDrive.ultraSlowModeOff();
+        } 
+
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return m_chooser.getSelected().withTimeout(14.5);
+    }
+
+    public void enableClaw() {
+        m_claw.reinitializeSensor();
+    }
+    
+    // public void enableAutomaticDistance() {
+    //     m_claw.enableAutomatic();
+    // }
+}
+
+// configureButtonBindings comments
+
+  //         () -> m_robotDrive.drive(
             //             -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
             //             -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
             //             -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
             //             false, true),
             //             m_robotDrive));
             
-        m_driverController.y().onTrue(
-            new RunCommand(() -> m_robotDrive.setDefaultCommand(
-                // The left stick controls translation of the robot.
-                // Turning is controlled by the X axis of the right stick.
+        // m_driverController.y().onTrue(
+        //     new RunCommand(() -> m_robotDrive.setDefaultCommand(
+        //         // The left stick controls translation of the robot.
+        //         // Turning is controlled by the X axis of the right stick.
                 
-                new RunCommand(
-                    () -> m_robotDrive.drive(
-                        -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
-                        false, true),
-                        m_robotDrive)))
-        );
+        //         // new RunCommand(
+        //         //     () -> m_robotDrive.drive(
+        //         //         -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //         //         -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //         //         -MathUtil.applyDeadband(m_driverController.getRightX() * 0.7 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
+        //         //         false, true),
+        //         //         m_robotDrive)))
+        //         new RunCommand(
+        //             () -> m_robotDrive.drive(
+        //                 -MathUtil.applyDeadband(m_driverController.getLeftY() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //                 -MathUtil.applyDeadband(m_driverController.getLeftX() * 0.65 * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.4 : 1) * m_robotDrive.m_reverseModeCoeff, OIConstants.kDriveDeadband),
+        //                 -MathUtil.applyDeadband(m_driverController.getRightX() * Constants.DriveConstants.kDriveSpeed * (m_robotDrive.m_slowMode ? 0.6 : 1), OIConstants.kDriveDeadband),
+        //                 true, true),
+        //                 m_robotDrive)))
+        // );
         
         // new JoystickButton(m_driverJoystick, 5).onTrue(
         //     new RunCommand(() ->
@@ -290,23 +463,26 @@ public class RobotContainer {
         //     () -> m_claw.toggleAutoClaw()
         // ));
 
-        // extend arm fully (level 3)
-        m_operatorController.y().onTrue(new ArmToHigh(m_arm));
-        // extend arm to level 2 height
-        m_operatorController.b().onTrue(new ArmToMid(m_arm));
-        // extend arm to level 1 height
-        m_operatorController.x().onTrue(new ArmToLow(m_arm));
-        // retract arm fully
-        m_operatorController.a().onTrue(new ArmToIn(m_arm));
+        // // extend arm fully (level 3)
+        // m_operatorController.y().onTrue(new ArmToHigh(m_arm));
+        // // extend arm to level 2 height
+        // m_operatorController.b().onTrue(new ArmToMid(m_arm));
+        // // extend arm to level 1 height
+        // m_operatorController.x().onTrue(new ArmToLow(m_arm));
+        // // retract arm fully
+        // m_operatorController.a().onTrue(new ArmToIn(m_arm));
+
+        // m_operatorController.y().onTrue(SequentialCommands.autoEject(m_robotDrive, m_claw, m_shoulder, m_arm));
+
+
 
         // m_operatorController.x().onTrue(new RunCommand(
         //     () -> m_claw.reinitializeSensor()
         // ));
 
         // reset arm encoder
-        m_operatorController.start().onTrue(new RunCommand(
-            () -> m_arm.resetEncoder()
-        ));
+
+
 
         // m_operatorController.leftTrigger().onTrue(new RunCommand(
         //     () -> m_arm.toggleLimit(false)
@@ -345,30 +521,8 @@ public class RobotContainer {
         //     () -> m_claw.setWheelsSpeed(-1)
         // ));
 
-        m_operatorController.leftTrigger().onTrue(new RunCommand(() -> m_claw.stop()));
 
-        // SHOULDER COMMANDS
-
-        // move shoulder to level 3
-        m_operatorController.pov(0).onTrue(new ShoulderToHigh(m_shoulder));
-        // move shoulder to level 2
-        m_operatorController.pov(90).onTrue(new ShoulderToMid(m_shoulder));
-        // move shoulder to level 1
-        m_operatorController.pov(270).onTrue(new ShoulderToLow(m_shoulder));
-        // extend shoulder to vertical down
-        m_operatorController.pov(180).onTrue(new ShoulderToIn(m_shoulder));
-        // reset shoulder encoder
-        m_operatorController.back().onTrue(new ShoulderEncoderReset(m_shoulder));
-
-        // m_operatorController.rightTrigger().onTrue(new RunCommand(
-        //     () -> m_arm.toggleArmLimit()
-        // ));
-
-        SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
-        SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
-    }
-
-    // public void driveControl() {
+ // public void driveControl() {
     //     if ((Math.abs(m_driverController.getLeftX()) > 0.1) || (Math.abs(m_driverController.getLeftY()) > 0.1) || (Math.abs(m_driverController.getRightX()) > 0.1)) {
     //         m_robotDrive.drive(
     //             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
@@ -384,114 +538,3 @@ public class RobotContainer {
     //         driveOn = false;
     //     }
     // }
-
-    public void driveControl() {
-
-    
-        // // Configure default commands
-        // m_robotDrive.setDefaultCommand(
-        //     // The left stick controls translation of the robot.
-        //     // Turning is controlled by the X axis of the right stick.
-            
-        //     new RunCommand(
-        //         () -> m_robotDrive.drive(
-        //             -MathUtil.applyDeadband(m_driverJoystick.getY() * driveSpeed, OIConstants.kDriveDeadband),
-        //             -MathUtil.applyDeadband(m_driverJoystick.getX() * driveSpeed, OIConstants.kDriveDeadband),
-        //             -MathUtil.applyDeadband(m_driverJoystick.getTwist() * driveSpeed, OIConstants.kDriveDeadband),
-        //             true, true),
-        //         m_robotDrive));
-            
-      }
-
-    //   public void enableLimit() {
-    //         m_arm.enableLimit();
-    //   }
-
-
-
-    public void containerPeriodic() {
-        
-        // if (autoclaw && System.nanoTime())
-        // if (m_claw.isConnected) {
-        //     m_claw.prox = m_claw.colorSensor.getProximity();
-        // }
-
-        if (m_claw.autoClaw && !m_claw.objectExisted && m_claw.objectExists) {
-			m_claw.close();
-			SmartDashboard.putBoolean("Has closed", true);
-		}
-
-        // ARM COMMANDS
-        // while held, extend/retract the arm
-        if (Math.abs(m_operatorController.getRightY()) > 0.1) {
-            m_arm.setArmSpeed(m_operatorController.getRightY());
-            rightJoystickPressed = true;
-        } else {
-            // joystick was just pressed -- means we're transitioning from arm extension to stop
-            if (rightJoystickPressed) {
-                m_arm.setArmSpeed(0);
-                // m_arm.stop();
-            }
-            rightJoystickPressed = false;
-        }
-
-        // while held, extend/retract the shoulder
-        if (Math.abs(m_operatorController.getLeftY()) > 0.1) {
-            m_shoulder.setShoulderSpeed(m_operatorController.getLeftY() * MechanismConstants.kShoulderSpeed);
-            leftJoystickPressed = true;
-        } else {
-            // joystick was just pressed -- means we're transitioning from shoulder extension to stop
-            if (leftJoystickPressed) {
-                m_shoulder.setShoulderSpeed(0);
-                // m_shoulder.stop();
-            }
-            leftJoystickPressed = false;
-        }
-
-        // if (m_driverController.getHID().getXButton()) {
-        //     m_robotDrive.setX();
-        // }
-
-        if (m_operatorController.getHID().getLeftBumperPressed()) {
-            m_claw.open();
-        } else if (m_operatorController.getHID().getRightBumperPressed()) {
-            m_claw.close();
-        }
-
-        if (m_operatorController.getHID().getRightTriggerAxis() > 0.1) {
-            m_claw.setWheelsSpeed(-0.3);
-            m_claw.autoClawOn();
-        } else if (m_operatorController.getHID().getLeftTriggerAxis() > 0.1) {
-            m_claw.setWheelsSpeed(1);
-        } else {
-            m_claw.setWheelsSpeed(0);
-            m_claw.autoClawOff();
-        }
-
-        if (m_driverController.getHID().getLeftBumper()) {
-            m_robotDrive.slowModeOn();
-        } else if (m_driverController.getHID().getLeftBumperReleased()) {
-            m_robotDrive.slowModeOff();
-        }
-
-       if (m_driverController.getHID().getRightBumper()) {
-            m_robotDrive.reverseMode();
-        } else if (m_driverController.getHID().getRightBumperReleased()) {
-            m_robotDrive.forwardMode();
-        } 
-
-    }
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        return m_chooser.getSelected().withTimeout(14.5);
-    }
-    
-    // public void enableAutomaticDistance() {
-    //     m_claw.enableAutomatic();
-    // }
-}

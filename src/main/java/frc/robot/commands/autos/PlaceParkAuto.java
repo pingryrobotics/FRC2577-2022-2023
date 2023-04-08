@@ -29,6 +29,8 @@ import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
 import frc.robot.commands.drive_commands.DriveForward;
 import frc.robot.commands.drive_commands.DriveForwardGyro;
+import frc.robot.commands.drive_commands.DriveX;
+import frc.robot.commands.grouped_commands.SequentialCommands;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Claw;
@@ -79,47 +81,39 @@ public class PlaceParkAuto extends SequentialCommandGroup {
             addCommands(
                 new RunCommand(
                     () -> m_claw.close()
-                ).withTimeout(0.5),
-                // new WaitCommand(0.5),
-                new ShoulderPID(m_shoulder, 83).withTimeout(2),
-                // new DriveForward(m_robotDrive, true).withTimeout(0.7),
-                // new RunCommand(
-                //     () -> m_robotDrive.drive(0, 0, 0, false, false)
-                //     // () -> m_robotDrive.stop()
-                // ).withTimeout(0.5),
-                new ClawWheels(m_claw, 0.65),
+                ).withTimeout(0.2),
+                new ShoulderPID(m_shoulder, 73).withTimeout(2),
                 new WaitCommand(0.5),
+                new ArmPID(m_arm, Constants.MechanismConstants.kArmFullExtension).withTimeout(2),
+                new WaitCommand(0.5),
+                new ClawWheels(m_claw, 0.55),// POWER
+                new WaitCommand(0.75),
                 new ClawWheels(m_claw, 0),
-                // new WaitCommand(0.5),
+                new ClawOpen(m_claw),
+                new WaitCommand(0.25),
+                new ArmPID(m_arm, 0).withTimeout(2),
                 new ShoulderPID(m_shoulder, 0).withTimeout(2)
-                // new WaitCommand(2)
-                // new ArmToHigh(m_arm).withTimeout(2),
-                // new WaitCommand(2),
-                // new InstantCommand(
-                //     () -> m_claw.open()
-                // ),
-                // new ArmExtend(m_arm).withTimeout(1.5),
             );
         }
         if (balance) {
             addCommands(
                 new DriveForwardGyro(m_robotDrive).withTimeout(12),
-                // new WaitCommand(5.0),
+                // correct for the overcorrection
                 new RunCommand(
-                    () -> m_robotDrive.drive(-0.04, 0, 0, false, false)
+                    () -> m_robotDrive.drive(-0.1, 0, 0, false, false) // 0.08
                     // () -> m_robotDrive.stop()
-                ).withTimeout(2),
+                ).withTimeout(1.725), //. BACKWARDS // 1.65
                 new RunCommand(
                     () -> m_robotDrive.drive(0, 0, 0, false, false)
                     // () -> m_robotDrive.stop()
                 ).withTimeout(0.5),
                 new RunCommand(
                     () -> m_robotDrive.setX()
-                )
+                ).withTimeout(5)
             );
         } else if (park) {
             addCommands(
-                new DriveForward(m_robotDrive, true).withTimeout(5),
+                new DriveForward(m_robotDrive, true).withTimeout(4.5),
                 // new WaitCommand(5.0),
                 new RunCommand(
                     () -> m_robotDrive.drive(0, 0, 0, false, false)

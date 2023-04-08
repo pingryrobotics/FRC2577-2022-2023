@@ -1,52 +1,43 @@
-package frc.robot.commands.drive_commands; //CTV
+package frc.robot.commands.claw_commands; //CTV
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem; //CTV
+import frc.robot.subsystems.Claw; //CTV
 
 /** An example command that uses an example subsystem. */
-public class DriveX extends CommandBase {
+public class ClawOpen extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final DriveSubsystem m_subsystem;
-    private final boolean m_turnOn;
+    private final Claw m_claw;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public DriveX(DriveSubsystem subsystem, boolean turnOn) {
-        m_subsystem = subsystem;
-        m_turnOn = turnOn;
+    public ClawOpen(Claw claw) {
+        m_claw = claw;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
+        addRequirements(claw);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (m_turnOn) {
-            m_subsystem.setX();
-        } else {
-            m_subsystem.drive(0, 0, 0, false, false);
-        }
-
-        
+        m_claw.open();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {}
+    public void execute() {
+
+    }
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-        m_subsystem.drive(0, 0, 0, false, false);
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

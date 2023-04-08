@@ -31,7 +31,7 @@ public class DriveForwardGyro extends CommandBase {
     public void initialize() {
         m_gyro.reset();
         initGyroPos = m_gyro.getGyroAngleY();
-        m_subsystem.drive(0.2, 0, 0, false, false);
+        m_subsystem.drive(0.3, 0, 0, false, false);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -39,7 +39,7 @@ public class DriveForwardGyro extends CommandBase {
     public void execute() {
         if ((m_gyro.getGyroAngleY() > (initGyroPos + 10)) && !tilted) {
             // started the tilt
-            m_subsystem.drive(0.07, 0, 0, false, false);
+            m_subsystem.drive(0.1, 0, 0, false, false);
             tilted = true;
         } else if (tilted) {
             if (m_gyro.getGyroAngleY() <= (2 + initGyroPos)) {

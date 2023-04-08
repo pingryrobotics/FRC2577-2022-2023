@@ -5,19 +5,20 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Shoulder;
 
 /** An example command that uses an example subsystem. */
-public class ShoulderPID extends CommandBase {
+public class ShoulderIncrement extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Shoulder m_shoulder;
     private double pos;
+    private double increment;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public ShoulderPID(Shoulder shoulder, double pos) {
+    public ShoulderIncrement(Shoulder shoulder, double increment) {
         m_shoulder = shoulder;
-        this.pos = pos;
+        this.increment = increment;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shoulder);
     }
@@ -25,6 +26,7 @@ public class ShoulderPID extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        this.pos = increment + m_shoulder.getShoulderPosition();
         m_shoulder.setDesiredTicks(pos);
     }
 
@@ -46,6 +48,6 @@ public class ShoulderPID extends CommandBase {
     public boolean isFinished() {
         // if (pos - m_shoulder.getShoulderPosition())
         // return false;
-        return (Math.abs(pos -m_shoulder.getShoulderPosition()) < 1);
+        return (Math.abs(pos - m_shoulder.getShoulderPosition()) < 1);
     }
 }

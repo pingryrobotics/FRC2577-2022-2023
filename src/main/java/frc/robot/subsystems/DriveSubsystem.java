@@ -53,7 +53,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_currentTranslationMag = 0.0;
 
   public boolean m_slowMode = false;
-  public int m_reverseModeCoeff = 1;
+  public boolean m_ultraSlowMode = false;
 
   public SwerveDriveKinematics kinematics = Constants.DriveConstants.kDriveKinematics;
 
@@ -187,9 +187,10 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
+    // for field relative, counterclockwise has to be positive
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()))
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees((double)-m_gyro.getGyroAngleZ()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -283,11 +284,11 @@ public class DriveSubsystem extends SubsystemBase {
   //   }
   // }
 
-  public void forwardMode() {
-    m_reverseModeCoeff = 1;
+  public void ultraSlowModeOn() {
+    m_ultraSlowMode = true;
   }
 
-  public void reverseMode() {
-    m_reverseModeCoeff = -1;
+  public void ultraSlowModeOff() {
+    m_ultraSlowMode = false;
   }
 }

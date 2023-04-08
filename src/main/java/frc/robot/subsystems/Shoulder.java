@@ -47,7 +47,7 @@ public class Shoulder extends SubsystemBase {
         double shoulderPos = shoulderMotor.getEncoder().getPosition();
 
         SmartDashboard.putNumber("Shoulder Position (rotations)", shoulderPos);
-        SmartDashboard.putNumber("Desired Rotation (rotations)", desiredPosition);
+        SmartDashboard.putNumber("Desired Shoulder Rotation (rotations)", desiredPosition);
         SmartDashboard.putNumber("Shoulder speed", speed);
         // This method will be called once per scheduler run
 
@@ -67,7 +67,11 @@ public class Shoulder extends SubsystemBase {
             // else if (shoulderPos < desiredPosition)
             //     shoulderMotor.set(Constants.MechanismConstants.kShoulderSpeed);
         } else {
+            
+            // m_pid.setReference(shoulderPos+(10*speed), ControlType.kPosition);
+            
             shoulderMotor.set(speed);
+            
         }
     }
     
