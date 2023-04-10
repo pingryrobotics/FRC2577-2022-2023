@@ -159,9 +159,13 @@ public class RobotContainer {
         
         // // Add commands to Autonomous Sendable Chooser
         m_chooser.setDefaultOption("Do Nothing", new DoNothingAuto());
-        m_chooser.addOption("New Place Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, false));
-        m_chooser.addOption("New Place Park Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, true));
-        m_chooser.addOption("New Place Balance Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, true, false));
+        m_chooser.addOption("New Place Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, false, false));
+        m_chooser.addOption("New Place Park Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, true, false));
+        m_chooser.addOption("New Place Balance Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, true, false, false));
+        m_chooser.addOption("New New Place Balance Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, true, false, false, true));
+        m_chooser.addOption("New New Balance Auto", new PlaceParkAuto(m_robotDrive, m_claw, m_shoulder, m_arm, side_chooser, false, false, false, true));
+
+
 
         m_chooser.addOption("One Piece Park Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, true));
         m_chooser.addOption("One Piece Auto", new OnePieceParkAuto(m_robotDrive, m_arm, m_claw, m_shoulder, side_chooser, true, false));
@@ -228,8 +232,6 @@ public class RobotContainer {
         m_operatorController.pov(270).onTrue(new ShoulderToLow(m_shoulder));
         // extend shoulder to vertical down
         m_operatorController.pov(180).onTrue(new ShoulderToIn(m_shoulder));
-        // reset shoulder encoder
-        m_operatorController.back().onTrue(new ShoulderEncoderReset(m_shoulder));
         
         // m_operatorController.rightTrigger().onTrue(new RunCommand(
         //     () -> m_arm.toggleArmLimit()
@@ -238,10 +240,6 @@ public class RobotContainer {
         SmartDashboard.putNumber("Arm Position (ticks)", m_arm.getArmPosition());
         SmartDashboard.putNumber("Shoulder Position (ticks)", m_shoulder.getShoulderPosition());
     }
-
-   
-
-
 
 
     public void containerPeriodic() {
@@ -327,6 +325,10 @@ public class RobotContainer {
 
         if(m_operatorController.getHID().getStartButtonPressed()) {
             m_arm.resetEncoder();
+        }
+
+        if(m_operatorController.getHID().getBackButtonPressed()) {
+            m_shoulder.resetEncoder();
         }
 
         if (m_driverController.getHID().getLeftBumper()) {

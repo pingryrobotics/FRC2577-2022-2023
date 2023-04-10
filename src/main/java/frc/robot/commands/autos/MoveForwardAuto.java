@@ -103,7 +103,7 @@ public class MoveForwardAuto extends SequentialCommandGroup {
         }
         if (park) {
             addCommands(
-                new DriveForward(m_robotDrive, false).withTimeout(5),
+                new DriveForward(m_robotDrive, false, 0.2).withTimeout(5),
                 // new WaitCommand(5.0),
                 new RunCommand(
                     () -> m_robotDrive.drive(0, 0, 0, false, false)

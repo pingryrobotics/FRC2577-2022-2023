@@ -27,6 +27,7 @@ import frc.robot.FieldConstants.Grids;
 import frc.robot.commands.shoulder_commands.*;
 import frc.robot.commands.arm_commands.*;
 import frc.robot.commands.claw_commands.*;
+import frc.robot.commands.drive_commands.CheckGyro;
 import frc.robot.commands.drive_commands.DriveForward;
 import frc.robot.commands.drive_commands.DriveForwardGyro;
 import frc.robot.commands.drive_commands.DriveX;
@@ -50,7 +51,7 @@ public class PlaceParkAuto extends SequentialCommandGroup {
 	* One Piece Park Auto.
 	* Places preloaded piece (cube) onto node and parks on a third of the charge station
 	*/
-    public PlaceParkAuto(DriveSubsystem drive, Claw claw, Shoulder shoulder, Arm arm, SendableChooser<Integer> side_chooser, boolean place, boolean balance, boolean park) {
+    public PlaceParkAuto(DriveSubsystem drive, Claw claw, Shoulder shoulder, Arm arm, SendableChooser<Integer> side_chooser, boolean place, boolean balance, boolean park, boolean newBalance) {
         m_robotDrive = drive;
         m_claw = claw;
         m_shoulder = shoulder;
@@ -102,7 +103,7 @@ public class PlaceParkAuto extends SequentialCommandGroup {
                 new RunCommand(
                     () -> m_robotDrive.drive(-0.1, 0, 0, false, false) // 0.08
                     // () -> m_robotDrive.stop()
-                ).withTimeout(1.725), //. BACKWARDS // 1.65
+                ).withTimeout(1.72), //. BACKWARDS // 1.65
                 new RunCommand(
                     () -> m_robotDrive.drive(0, 0, 0, false, false)
                     // () -> m_robotDrive.stop()
@@ -113,7 +114,7 @@ public class PlaceParkAuto extends SequentialCommandGroup {
             );
         } else if (park) {
             addCommands(
-                new DriveForward(m_robotDrive, true).withTimeout(4.5),
+                new DriveForward(m_robotDrive, true, 0.2).withTimeout(4.5),
                 // new WaitCommand(5.0),
                 new RunCommand(
                     () -> m_robotDrive.drive(0, 0, 0, false, false)
@@ -124,6 +125,59 @@ public class PlaceParkAuto extends SequentialCommandGroup {
                 ).withTimeout(1),
                 new WaitCommand(2.0)        
             );
+        } else if (newBalance) {
+            addCommands(
+                new DriveForwardGyro(m_robotDrive).withTimeout(12));
+                new CheckGyro(m_robotDrive);
+                // correct for the overcorrection
+                // new RunCommand(
+                //     () -> m_robotDrive.drive(-0.1, 0, 0, false, false) // 0.08
+                    // () -> m_robotDrive.stop()
+                // ).withTimeout(1.72)); //. BACKWARDS // 1.65
+                // new CheckGyro(m_robotDrive).withTimeout(.2),
+                // new WaitCommand(1),
+                // new RunCommand(
+                //     () -> m_robotDrive.drive(0, 0, 0, false, false)
+                //     // () -> m_robotDrive.stop()
+                // ).withTimeout(0.5),
+                // new RunCommand(
+                //     () -> m_robotDrive.setX()
+                // ).withTimeout(5));
+            // int cnt = 0;
+            // for (int cnt = 0; cnt < 10; cnt++) {
+            //     if (Math.abs(m_robotDrive.m_gyro.getGyroAngleY()) > 5) {
+            //         addCommands(
+            //             new DriveForward(m_robotDrive, (m_robotDrive.m_gyro.getGyroAngleY() > 0 ? false : true),.1).withTimeout(0.5),
+            //             new RunCommand(
+            //                 () ->
+            //                  m_robotDrive.setX()
+            //             ).withTimeout(0.1),
+            //             new WaitCommand(1));
+            //         // move in direc for some seconds
+            //         // cnt++;
+            //     } else {
+            //         addCommands(                
+            //         new RunCommand(
+            //             () -> m_robotDrive.setX()));
+            //         cnt--;
+            //     }
+            //     if (Math.abs(m_robotDrive.m_gyro.getGyroAngleY()) > 5) {
+            //         addCommands(
+            //             new DriveForward(m_robotDrive, (m_robotDrive.m_gyro.getGyroAngleY() > 0 ? false : true),.1).withTimeout(0.5),
+            //             new RunCommand(
+            //                 () -> m_robotDrive.setX()
+            //             ).withTimeout(0.1),
+            //             new WaitCommand(1));
+            //         // move in direc for some seconds
+            //         cnt++;
+            //     } else {
+            //         addCommands(                
+            //         new RunCommand(
+            //             () -> m_robotDrive.setX()));
+            //     }
+            
+ 
+            
         }
 	}
 } 

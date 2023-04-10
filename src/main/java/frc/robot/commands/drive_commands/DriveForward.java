@@ -9,13 +9,14 @@ public class DriveForward extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveSubsystem m_subsystem;
     private boolean forward;
+    private double speed;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public DriveForward(DriveSubsystem subsystem, boolean forward) {
+    public DriveForward(DriveSubsystem subsystem, boolean forward, double speed) {
         m_subsystem = subsystem;
         this.forward = forward;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -25,7 +26,7 @@ public class DriveForward extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.drive((forward ? 1 : -1) * 0.2, 0, 0, false, false);
+        m_subsystem.drive((forward ? 1 : -1) * speed, 0, 0, false, false);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +35,9 @@ public class DriveForward extends CommandBase {
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {}
+    public void end(boolean interrupted) {
+        m_subsystem.setX();
+    }
 
     // Returns true when the command should end.
     @Override
